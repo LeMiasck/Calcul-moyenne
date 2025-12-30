@@ -35,7 +35,7 @@
     .wrap{ max-width: 980px; margin: 0 auto; }
     .hero{
       display:flex; gap:14px; align-items:center; justify-content:space-between;
-      color:#eaf2ff; padding: 18px 18px 10px;
+      color:#eaf2ff; padding: 18px 18px 8px;
     }
     .brand{ display:flex; align-items:center; gap:12px; min-width: 220px; }
     .logo{
@@ -43,7 +43,7 @@
       background: linear-gradient(135deg, var(--primary2), var(--primary));
       box-shadow: 0 10px 25px rgba(64,169,255,.25);
       display:grid;place-items:center;
-      font-weight:900; color:#06223a;
+      font-weight:1000; color:#06223a;
     }
     h1{ margin:0; font-size: 20px; letter-spacing: .2px; }
     .subtitle{ margin:2px 0 0; opacity:.85; font-size: 13px; }
@@ -56,26 +56,90 @@
       font-size: 13px; white-space: nowrap;
     }
     .pill b{ color:#fff; }
+
+    /* Tabs */
     .tabs{
       display:flex; gap:10px; flex-wrap:wrap;
-      padding: 0 18px 12px;
+      padding: 0 18px 14px;
     }
     .tab{
+      position: relative;
       border: 1px solid rgba(255,255,255,.18);
       background: rgba(255,255,255,.10);
       color:#eaf2ff;
       padding: 10px 12px;
+      padding-right: 62px; /* place mascotte */
       border-radius: 999px;
       cursor:pointer;
-      font-weight:800;
+      font-weight:900;
       font-size: 13px;
       user-select:none;
+      overflow: visible;
     }
     .tab.active{
       background: linear-gradient(135deg, rgba(64,169,255,.55), rgba(11,94,215,.35));
       border-color: rgba(64,169,255,.65);
     }
 
+    /* Mascottes */
+    .mascot{
+      position:absolute;
+      right:-6px;
+      top:-18px;
+      width:70px;
+      height:50px;
+      pointer-events:none;
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,.25));
+      transform: rotate(-6deg);
+      opacity:.95;
+      transform-origin: 70% 80%;
+    }
+    @keyframes floaty {
+      0%,100% { transform: rotate(-6deg) translateY(0); }
+      50%     { transform: rotate(-6deg) translateY(-2px); }
+    }
+    @keyframes pop {
+      0% { transform: translateY(6px) scale(.96); opacity:0; }
+      100% { transform: translateY(0) scale(1); opacity:1; }
+    }
+    @keyframes bounce {
+      0% { transform: rotate(-2deg) translateY(0); }
+      35% { transform: rotate(-2deg) translateY(-4px); }
+      100% { transform: rotate(-2deg) translateY(-1px); }
+    }
+    .tab .mascot{ animation: floaty 2.2s ease-in-out infinite; }
+    .tab.active .mascot{ animation: bounce .35s ease-out 1; transform: rotate(-2deg) translateY(-1px); }
+
+    /* Bulles */
+    .bubble{
+      position:absolute;
+      right: 52px;
+      top: -34px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.92);
+      border: 1px solid rgba(64,169,255,.35);
+      color: #0b2f52;
+      font-weight: 1000;
+      font-size: 12px;
+      white-space: nowrap;
+      box-shadow: 0 12px 26px rgba(0,0,0,.18);
+      display:none;
+    }
+    .bubble:after{
+      content:"";
+      position:absolute;
+      right: 18px;
+      bottom: -6px;
+      width: 12px; height: 12px;
+      background: rgba(255,255,255,.92);
+      border-left: 1px solid rgba(64,169,255,.35);
+      border-bottom: 1px solid rgba(64,169,255,.35);
+      transform: rotate(45deg);
+    }
+    .tab.active .bubble{ display:block; animation: pop .18s ease-out 1; }
+
+    /* Layout */
     .grid2{ display:grid; grid-template-columns: 1.15fr .85fr; gap: 14px; }
     .card{
       background: var(--card);
@@ -90,10 +154,10 @@
       border-bottom: 1px solid var(--line);
       display:flex; justify-content:space-between; align-items:center; gap:10px;
     }
-    .cardHead .title{ font-weight: 900; font-size: 14px; color:#0b2f52; }
+    .cardHead .title{ font-weight: 1000; font-size: 14px; color:#0b2f52; }
     .cardHead .hint{ font-size: 12px; color: var(--muted); }
 
-    label{ display:block; font-size: 12px; color: var(--muted); margin-bottom: 6px; font-weight: 700; }
+    label{ display:block; font-size: 12px; color: var(--muted); margin-bottom: 6px; font-weight: 800; }
     select, input{
       width:100%;
       padding: 11px 12px;
@@ -115,6 +179,12 @@
       gap: 10px;
       padding: 14px 16px 6px;
     }
+    .starControls{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      padding: 14px 16px 6px;
+    }
 
     .rows{ padding: 8px 16px 2px; }
     .row{ display:grid; grid-template-columns: 1fr 1fr 92px; gap:10px; margin-bottom:10px; }
@@ -125,20 +195,19 @@
       border-radius: 14px;
       padding: 11px 14px;
       font-size: 15px;
-      font-weight: 800;
+      font-weight: 900;
       cursor:pointer;
       transition: transform .06s ease, filter .12s ease, opacity .12s ease;
       user-select:none;
     }
     button:active{ transform: translateY(1px); }
-
     .primary{
       color:#06223a;
       background: linear-gradient(135deg, var(--primary2), var(--primary));
       box-shadow: 0 10px 25px rgba(11,94,215,.20);
     }
     .ghost{ background: rgba(11,94,215,.08); color: #0b2f52; }
-    .dangerBtn{ background: rgba(176,0,32,.08); color: var(--bad); font-weight: 900; }
+    .dangerBtn{ background: rgba(176,0,32,.08); color: var(--bad); font-weight: 1000; }
     .mini{ font-size: 13px; padding: 10px 12px; border-radius: 12px; }
     .del{
       background: rgba(11,94,215,.08);
@@ -160,13 +229,13 @@
       padding: 12px;
       background: #ffffff;
     }
-    .kpiBox .k{ font-size: 12px; color: var(--muted); margin-bottom: 4px; font-weight: 800; }
-    .kpiBox .v{ font-size: 20px; font-weight: 1000; color:#0b2f52; }
+    .kpiBox .k{ font-size: 12px; color: var(--muted); margin-bottom: 4px; font-weight: 900; }
+    .kpiBox .v{ font-size: 20px; font-weight: 1100; color:#0b2f52; }
 
     .badge{
       display:inline-flex; align-items:center; gap:8px;
       padding: 8px 10px; border-radius: 999px;
-      font-weight: 900; font-size: 12px;
+      font-weight: 1000; font-size: 12px;
       border: 1px solid var(--line); background:#fff;
       margin-top: 4px;
     }
@@ -199,21 +268,13 @@
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      font-weight: 900;
+      font-weight: 1000;
     }
-    .starGhost{ color: rgba(11,94,215,.20); font-weight: 900; }
-
-    .footer{ margin-top: 14px; color: rgba(255,255,255,.70); text-align:center; font-size: 12px; }
 
     .section{ display:none; }
     .section.active{ display:block; }
 
-    .starControls{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      padding: 14px 16px 6px;
-    }
+    .footer{ margin-top: 14px; color: rgba(255,255,255,.70); text-align:center; font-size: 12px; }
 
     @media (max-width: 860px){
       .grid2{ grid-template-columns: 1fr; }
@@ -221,6 +282,9 @@
       .starControls{ grid-template-columns: 1fr; }
       .kpi{ grid-template-columns: 1fr; }
       .pill{ display:none; }
+    }
+    @media (max-width: 520px){
+      .bubble{ display:none !important; }
     }
   </style>
 </head>
@@ -235,12 +299,72 @@
           <div class="subtitle">Scolaire + Avis ⭐ (hôtel/site) • Sauvegarde automatique</div>
         </div>
       </div>
-      <div class="pill"><b>Astuce</b> : dans “Étoiles”, mets le nombre d’avis pour une moyenne pondérée.</div>
+      <div class="pill"><b>Astuce</b> : dans “Étoiles”, utilise le nombre d’avis pour une moyenne pondérée.</div>
     </div>
 
     <div class="tabs">
-      <div class="tab active" id="tabSchool">🎓 Scolaire</div>
-      <div class="tab" id="tabStars">⭐ Étoiles (hôtel/site)</div>
+      <div class="tab active" id="tabSchool">
+        🎓 Scolaire
+        <span class="bubble">Je calcule ta moyenne 📚</span>
+
+        <!-- Mascotte carnet -->
+        <svg class="mascot" viewBox="0 0 140 100" aria-hidden="true">
+          <defs>
+            <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#40a9ff"/>
+              <stop offset="1" stop-color="#0b5ed7"/>
+            </linearGradient>
+          </defs>
+          <ellipse cx="78" cy="86" rx="48" ry="10" fill="rgba(0,0,0,.18)"/>
+          <rect x="40" y="32" width="76" height="42" rx="10" fill="url(#g1)"/>
+          <rect x="46" y="36" width="64" height="34" rx="8" fill="rgba(255,255,255,.15)"/>
+          <rect x="40" y="32" width="10" height="42" rx="8" fill="rgba(255,255,255,.25)"/>
+          <circle cx="70" cy="52" r="4" fill="#06223a"/>
+          <circle cx="88" cy="52" r="4" fill="#06223a"/>
+          <path d="M74 60 Q79 64 84 60" stroke="#06223a" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path d="M36 56 Q28 56 24 64" stroke="#0b2f52" stroke-width="8" stroke-linecap="round"/>
+          <path d="M118 56 Q128 56 134 64" stroke="#0b2f52" stroke-width="8" stroke-linecap="round"/>
+          <path d="M66 74 Q62 82 54 84" stroke="#0b2f52" stroke-width="8" stroke-linecap="round"/>
+          <path d="M96 74 Q100 82 108 84" stroke="#0b2f52" stroke-width="8" stroke-linecap="round"/>
+          <rect x="18" y="70" width="28" height="10" rx="5" fill="#ffd166"/>
+          <rect x="40" y="70" width="10" height="10" rx="3" fill="#ef476f"/>
+          <path d="M18 70 L10 75 L18 80 Z" fill="#d6ccc2"/>
+        </svg>
+      </div>
+
+      <div class="tab" id="tabStars">
+        ⭐ Étoiles (hôtel/site)
+        <span class="bubble">On note ça ⭐</span>
+
+        <!-- Mascotte étoile -->
+        <svg class="mascot" viewBox="0 0 140 100" aria-hidden="true">
+          <defs>
+            <linearGradient id="g2" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#7dd3fc"/>
+              <stop offset="1" stop-color="#1d4ed8"/>
+            </linearGradient>
+          </defs>
+          <ellipse cx="78" cy="86" rx="46" ry="10" fill="rgba(0,0,0,.18)"/>
+          <path d="M78 24
+                   L87 44
+                   L109 46
+                   L92 60
+                   L98 82
+                   L78 70
+                   L58 82
+                   L64 60
+                   L47 46
+                   L69 44 Z"
+                fill="url(#g2)"/>
+          <circle cx="70" cy="54" r="4" fill="#06223a"/>
+          <circle cx="86" cy="54" r="4" fill="#06223a"/>
+          <path d="M72 62 Q78 67 84 62" stroke="#06223a" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path d="M46 60 Q32 58 24 66" stroke="#0b2f52" stroke-width="8" stroke-linecap="round"/>
+          <path d="M110 60 Q124 58 134 66" stroke="#0b2f52" stroke-width="8" stroke-linecap="round"/>
+          <path d="M70 78 Q64 84 56 86" stroke="#0b2f52" stroke-width="8" stroke-linecap="round"/>
+          <path d="M88 78 Q94 84 102 86" stroke="#0b2f52" stroke-width="8" stroke-linecap="round"/>
+        </svg>
+      </div>
     </div>
 
     <!-- SECTION SCOLAIRE -->
@@ -390,7 +514,7 @@
   </div>
 
   <script>
-    const STORAGE_KEY = "calcul-moyenne-v4";
+    const STORAGE_KEY = "calcul-moyenne-v5";
     const $ = (id) => document.getElementById(id);
 
     function round2(n){ return Math.round(n*100)/100; }
@@ -485,14 +609,14 @@
 
       if(invalid){
         resultSchool.style.display="block";
-        resultSchool.innerHTML = `<p style="color:#b00020;font-weight:900;margin:0;">Erreur : notes (0 à ${maxNote}) et coefs (>=1).</p>`;
+        resultSchool.innerHTML = `<p style="color:#b00020;font-weight:1000;margin:0;">Erreur : notes (0 à ${maxNote}) et coefs (>=1).</p>`;
         shareBoxSchool.style.display="none";
         badgeSchool.style.display="none";
         return;
       }
       if(coefSum===0){
         resultSchool.style.display="block";
-        resultSchool.innerHTML = `<p style="color:#b00020;font-weight:900;margin:0;">Rien à calculer : ajoute au moins une note.</p>`;
+        resultSchool.innerHTML = `<p style="color:#b00020;font-weight:1000;margin:0;">Rien à calculer : ajoute au moins une note.</p>`;
         shareBoxSchool.style.display="none";
         badgeSchool.style.display="none";
         return;
@@ -519,307 +643,3 @@
         <div class="small" style="margin-top:10px;"><b>Prochain contrôle</b> (coef ${nextCoef}) :</div>
         <ul class="list">
           <li>Pour atteindre <b>${target} / ${maxNote}</b> : vise <b>${needTarget}</b> / ${maxNote}</li>
-          <li>Pour atteindre la moyenne (<b>${round2(maxNote/2)} / ${maxNote}</b>) : vise <b>${needMid}</b> / ${maxNote}</li>
-        </ul>
-      `;
-
-      const txt =
-`Moyenne : ${avgR}/${maxNote}
-Coef total : ${coefSum}
-Prochain contrôle coef ${nextCoef}
-Objectif ${target}/${maxNote} → note à viser : ${needTarget}/${maxNote}`;
-
-      shareTextSchool.textContent = txt;
-      shareBoxSchool.style.display="block";
-      saveState();
-    }
-
-    $("addSchool").onclick = () => { makeRowSchool(); saveState(); };
-    $("calcSchool").onclick = computeSchool;
-    $("exampleSchool").onclick = () => {
-      maxNoteEl.value="20"; nextCoefEl.value="2"; targetEl.value="12";
-      rowsSchool.innerHTML="";
-      makeRowSchool("14","2");
-      makeRowSchool("9","1");
-      makeRowSchool("12","3");
-      makeRowSchool("","1");
-      makeRowSchool("","1");
-      makeRowSchool("","1");
-      saveState();
-      computeSchool();
-    };
-    $("resetSchool").onclick = () => {
-      rowsSchool.innerHTML="";
-      resultSchool.style.display="none";
-      shareBoxSchool.style.display="none";
-      badgeSchool.style.display="none";
-      for(let i=0;i<6;i++) makeRowSchool();
-      saveState();
-    };
-    $("copySchool").onclick = async () => {
-      const txt = shareTextSchool.textContent || "";
-      try{ await navigator.clipboard.writeText(txt); alert("Copié !"); }
-      catch{ alert("Copie impossible : sélectionne le texte et copie manuellement."); }
-    };
-
-    maxNoteEl.addEventListener("change", saveState);
-    nextCoefEl.addEventListener("change", saveState);
-    targetEl.addEventListener("change", saveState);
-
-    // ---------- ÉTOILES ----------
-    const rowsStars = $("rowsStars");
-    const resultStars = $("resultStars");
-    const badgeStars = $("statusBadgeStars");
-    const shareBoxStars = $("shareboxStars");
-    const shareTextStars = $("sharetextStars");
-
-    const starsModeEl = $("starsMode");
-    const starsScaleEl = $("starsScale");
-
-    function makeRowStars(rating="", count=""){
-      // rating: note sur 5, count: nb d'avis (poids)
-      const wrap = document.createElement("div");
-      wrap.className = "row";
-
-      const ratingInput = document.createElement("input");
-      ratingInput.type="number"; ratingInput.inputMode="decimal";
-      ratingInput.placeholder="Note (sur 5)"; ratingInput.min="0"; ratingInput.max="5"; ratingInput.step="0.1";
-      ratingInput.value = rating;
-
-      const countInput = document.createElement("input");
-      countInput.type="number"; countInput.inputMode="numeric";
-      countInput.placeholder="Nb d’avis (poids)"; countInput.min="1"; countInput.step="1";
-      countInput.value = count;
-
-      const delBtn = document.createElement("button");
-      delBtn.className="del"; delBtn.textContent="Suppr.";
-      delBtn.onclick = () => { wrap.remove(); saveState(); };
-
-      ratingInput.addEventListener("input", saveState);
-      countInput.addEventListener("input", saveState);
-
-      wrap.appendChild(ratingInput);
-      wrap.appendChild(countInput);
-      wrap.appendChild(delBtn);
-      rowsStars.appendChild(wrap);
-    }
-
-    function starsString(avg5){
-      // affichage en étoiles (avec demi-étoile approximée)
-      const full = Math.floor(avg5);
-      const frac = avg5 - full;
-      const half = frac >= 0.25 && frac < 0.75 ? 1 : 0;
-      const extra = frac >= 0.75 ? 1 : 0;
-      const filled = full + extra;
-      const empty = 5 - filled - half;
-
-      let s = "★".repeat(filled);
-      if(half) s += "⯨"; // symbole demi-étoile (peut varier selon téléphone)
-      s += "☆".repeat(empty);
-      return s;
-    }
-
-    function showBadgeStars(avg5){
-      badgeStars.style.display = "inline-flex";
-      if(avg5 < 3.0){ badgeStars.className="badge b-bad"; badgeStars.textContent="Qualité : faible"; }
-      else if(avg5 < 4.0){ badgeStars.className="badge b-warn"; badgeStars.textContent="Qualité : correcte"; }
-      else if(avg5 < 4.5){ badgeStars.className="badge b-ok"; badgeStars.textContent="Qualité : très bien"; }
-      else { badgeStars.className="badge b-ok"; badgeStars.textContent="Qualité : excellent"; }
-    }
-
-    function computeStars(){
-      const mode = starsModeEl.value;          // weighted or simple
-      const scale = parseFloat(starsScaleEl.value); // 5, 10, 20
-
-      let sum=0, weightSum=0;
-      let invalid=false;
-
-      for(const r of [...rowsStars.querySelectorAll(".row")]){
-        const inputs = r.querySelectorAll("input");
-        const ratingRaw = inputs[0].value.trim();
-        const countRaw = inputs[1].value.trim();
-
-        if(ratingRaw==="" && countRaw==="") continue;
-
-        const rating = parseFloat(ratingRaw);
-        const count = parseInt(countRaw, 10);
-
-        if(Number.isNaN(rating) || rating<0 || rating>5){ invalid=true; break; }
-
-        if(mode === "weighted"){
-          if(Number.isNaN(count) || count < 1){ invalid=true; break; }
-          sum += rating * count;
-          weightSum += count;
-        } else {
-          // simple: count ignoré
-          sum += rating;
-          weightSum += 1;
-        }
-      }
-
-      if(invalid){
-        resultStars.style.display="block";
-        resultStars.innerHTML = `<p style="color:#b00020;font-weight:900;margin:0;">Erreur : note entre 0 et 5. En mode pondéré, “nb d’avis” doit être ≥ 1.</p>`;
-        shareBoxStars.style.display="none";
-        badgeStars.style.display="none";
-        return;
-      }
-      if(weightSum===0){
-        resultStars.style.display="block";
-        resultStars.innerHTML = `<p style="color:#b00020;font-weight:900;margin:0;">Rien à calculer : ajoute au moins un avis.</p>`;
-        shareBoxStars.style.display="none";
-        badgeStars.style.display="none";
-        return;
-      }
-
-      const avg5 = sum/weightSum;
-      const avg5R = round2(avg5);
-      const avgScaled = round2(avg5 * (scale/5));
-
-      showBadgeStars(avg5R);
-
-      const starVisual = starsString(avg5R);
-      const modeLabel = (mode === "weighted") ? "pondérée" : "simple";
-      const totalLabel = (mode === "weighted") ? `Total avis : ${weightSum}` : `Nombre de notes : ${weightSum}`;
-
-      resultStars.style.display="block";
-      resultStars.innerHTML = `
-        <div class="kpi">
-          <div class="kpiBox"><div class="k">Moyenne ⭐</div><div class="v">${avg5R} / 5</div></div>
-          <div class="kpiBox"><div class="k">${totalLabel}</div><div class="v">${weightSum}</div></div>
-        </div>
-
-        <div class="starsLine">
-          <div class="stars">${starVisual}</div>
-          <div class="small" style="margin:0;"><b>Mode :</b> ${modeLabel}</div>
-        </div>
-
-        <div class="small" style="margin-top:10px;">
-          Équivalence : <b>${avgScaled}</b> / <b>${scale}</b>
-        </div>
-      `;
-
-      const txt =
-`Moyenne étoiles : ${avg5R}/5
-Équivalence : ${avgScaled}/${scale}
-Mode : ${modeLabel}
-${totalLabel}`;
-
-      shareTextStars.textContent = txt;
-      shareBoxStars.style.display="block";
-      saveState();
-    }
-
-    $("addStars").onclick = () => { makeRowStars(); saveState(); };
-    $("calcStars").onclick = computeStars;
-    $("exampleStars").onclick = () => {
-      starsModeEl.value = "weighted";
-      starsScaleEl.value = "10";
-      rowsStars.innerHTML="";
-      makeRowStars("4.6","120");
-      makeRowStars("4.2","40");
-      makeRowStars("3.9","15");
-      makeRowStars("",""); // ligne vide
-      makeRowStars("","");
-      saveState();
-      computeStars();
-    };
-    $("resetStars").onclick = () => {
-      rowsStars.innerHTML="";
-      resultStars.style.display="none";
-      shareBoxStars.style.display="none";
-      badgeStars.style.display="none";
-      for(let i=0;i<5;i++) makeRowStars();
-      saveState();
-    };
-    $("copyStars").onclick = async () => {
-      const txt = shareTextStars.textContent || "";
-      try{ await navigator.clipboard.writeText(txt); alert("Copié !"); }
-      catch{ alert("Copie impossible : sélectionne le texte et copie manuellement."); }
-    };
-    starsModeEl.addEventListener("change", saveState);
-    starsScaleEl.addEventListener("change", saveState);
-
-    // ---------- SAVE/LOAD GLOBAL ----------
-    function getSchoolRowsData(){
-      return [...rowsSchool.querySelectorAll(".row")].map(r=>{
-        const inputs = r.querySelectorAll("input");
-        return { note: inputs[0].value, coef: inputs[1].value };
-      });
-    }
-    function getStarsRowsData(){
-      return [...rowsStars.querySelectorAll(".row")].map(r=>{
-        const inputs = r.querySelectorAll("input");
-        return { rating: inputs[0].value, count: inputs[1].value };
-      });
-    }
-
-    function saveState(){
-      const state = {
-        activeTab: sectionStars.classList.contains("active") ? "stars" : "school",
-        school: {
-          maxNote: maxNoteEl.value,
-          nextCoef: nextCoefEl.value,
-          target: targetEl.value,
-          rows: getSchoolRowsData()
-        },
-        stars: {
-          mode: starsModeEl.value,
-          scale: starsScaleEl.value,
-          rows: getStarsRowsData()
-        }
-      };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    }
-
-    function loadState(){
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if(!raw){
-        // défaut
-        for(let i=0;i<6;i++) makeRowSchool();
-        for(let i=0;i<5;i++) makeRowStars();
-        return;
-      }
-      try{
-        const st = JSON.parse(raw);
-
-        if(st.school){
-          if(st.school.maxNote) maxNoteEl.value = String(st.school.maxNote);
-          if(st.school.nextCoef) nextCoefEl.value = String(st.school.nextCoef);
-          if(st.school.target) targetEl.value = String(st.school.target);
-
-          rowsSchool.innerHTML="";
-          const r = st.school.rows || [];
-          if(r.length){ for(const it of r) makeRowSchool(it.note ?? "", it.coef ?? "1"); }
-          else { for(let i=0;i<6;i++) makeRowSchool(); }
-        } else {
-          for(let i=0;i<6;i++) makeRowSchool();
-        }
-
-        if(st.stars){
-          if(st.stars.mode) starsModeEl.value = String(st.stars.mode);
-          if(st.stars.scale) starsScaleEl.value = String(st.stars.scale);
-
-          rowsStars.innerHTML="";
-          const r2 = st.stars.rows || [];
-          if(r2.length){ for(const it of r2) makeRowStars(it.rating ?? "", it.count ?? ""); }
-          else { for(let i=0;i<5;i++) makeRowStars(); }
-        } else {
-          for(let i=0;i<5;i++) makeRowStars();
-        }
-
-        if(st.activeTab === "stars") setTab("stars");
-        else setTab("school");
-      }catch{
-        // fallback
-        rowsSchool.innerHTML=""; rowsStars.innerHTML="";
-        for(let i=0;i<6;i++) makeRowSchool();
-        for(let i=0;i<5;i++) makeRowStars();
-      }
-    }
-
-    // init
-    loadState();
-  </script>
-</body>
-</html>
