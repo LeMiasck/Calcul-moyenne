@@ -5,42 +5,87 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Calculateur de moyenne (collège)</title>
   <style>
-    body { font-family: Arial, sans-serif; max-width: 720px; margin: 24px auto; padding: 0 12px; }
-    h1 { font-size: 22px; }
-    .row { display: grid; grid-template-columns: 1fr 1fr 90px; gap: 10px; margin-bottom: 10px; }
-    input { padding: 10px; font-size: 16px; width: 100%; box-sizing: border-box; }
-    button { padding: 10px 12px; font-size: 16px; cursor: pointer; }
-    .box { padding: 12px; border: 1px solid #ddd; border-radius: 10px; margin-top: 14px; }
+    body { font-family: Arial, sans-serif; max-width: 820px; margin: 24px auto; padding: 0 12px; }
+    h1 { font-size: 22px; margin-bottom: 6px; }
     .small { font-size: 13px; color: #444; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr 90px; gap: 10px; margin-bottom: 10px; }
+    input, select { padding: 10px; font-size: 16px; width: 100%; box-sizing: border-box; }
+    button { padding: 10px 12px; font-size: 16px; cursor: pointer; margin-right: 8px; margin-top: 8px; }
+    .box { padding: 12px; border: 1px solid #ddd; border-radius: 10px; margin-top: 14px; }
     .danger { color: #b00020; }
+    .rowhead { display:flex; gap:10px; flex-wrap:wrap; align-items:end; margin: 10px 0 12px; }
+    .ctl { min-width: 180px; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
+    ul { margin-top: 6px; }
   </style>
 </head>
 <body>
   <h1>Calculateur de moyenne scolaire</h1>
-  <p class="small">Entre tes notes et coefficients, puis calcule. (Ex : note 14, coef 2)</p>
+  <p class="small">Entre tes notes et coefficients, puis calcule. Tes données sont sauvegardées sur ton appareil.</p>
+
+  <div class="rowhead">
+    <div class="ctl">
+      <label class="small" for="maxNote"><b>Barème</b></label>
+      <select id="maxNote">
+        <option value="20" selected>sur 20</option>
+        <option value="10">sur 10</option>
+        <option value="5">sur 5</option>
+      </select>
+    </div>
+
+    <div class="ctl">
+      <label class="small" for="nextCoef"><b>Coef prochain contrôle</b></label>
+      <select id="nextCoef">
+        <option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option><option>6</option>
+      </select>
+    </div>
+
+    <div class="ctl">
+      <label class="small" for="target"><b>Objectif</b></label>
+      <select id="target">
+        <option value="10">10</option>
+        <option value="12" selected>12</option>
+        <option value="14">14</option>
+        <option value="15">15</option>
+        <option value="16">16</option>
+      </select>
+    </div>
+  </div>
 
   <div id="rows"></div>
 
   <button id="add">+ Ajouter une note</button>
   <button id="calc">Calculer</button>
+  <button id="example">Exemple</button>
   <button id="reset">Réinitialiser</button>
 
   <div class="box" id="result" style="display:none;"></div>
+  <div class="box" id="sharebox" style="display:none;"></div>
 
   <script>
     const rowsEl = document.getElementById("rows");
     const resultEl = document.getElementById("result");
+    const shareEl = document.getElementById("sharebox");
+
+    const maxNoteEl = document.getElementById("maxNote");
+    const nextCoefEl = document.getElementById("nextCoef");
+    const targetEl = document.getElementById("target");
+
+    const STORAGE_KEY = "calcul-moyenne-v2";
+
+    function round2(n) { return Math.round(n * 100) / 100; }
+
+    function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
 
     function makeRow(note = "", coef = "1") {
       const wrap = document.createElement("div");
-      wrap.className = "row";
+      wrap.className = "grid";
 
       const noteInput = document.createElement("input");
       noteInput.type = "number";
       noteInput.inputMode = "decimal";
-      noteInput.placeholder = "Note (sur 20)";
+      noteInput.placeholder = "Note";
       noteInput.min = "0";
-      noteInput.max = "20";
       noteInput.step = "0.1";
       noteInput.value = note;
 
@@ -54,7 +99,10 @@
 
       const delBtn = document.createElement("button");
       delBtn.textContent = "Suppr.";
-      delBtn.onclick = () => wrap.remove();
+      delBtn.onclick = () => { wrap.remove(); saveState(); };
+
+      noteInput.addEventListener("input", saveState);
+      coefInput.addEventListener("input", saveState);
 
       wrap.appendChild(noteInput);
       wrap.appendChild(coefInput);
@@ -62,39 +110,85 @@
       rowsEl.appendChild(wrap);
     }
 
-    function round2(n) { return Math.round(n * 100) / 100; }
+    function getRowsData() {
+      const rows = [...rowsEl.querySelectorAll(".grid")];
+      return rows.map(r => {
+        const inputs = r.querySelectorAll("input");
+        return { note: inputs[0].value, coef: inputs[1].value };
+      });
+    }
+
+    function setRowsData(data) {
+      rowsEl.innerHTML = "";
+      if (!data || data.length === 0) {
+        for (let i = 0; i < 5; i++) makeRow();
+        return;
+      }
+      for (const it of data) makeRow(it.note ?? "", it.coef ?? "1");
+    }
+
+    function saveState() {
+      const state = {
+        maxNote: maxNoteEl.value,
+        nextCoef: nextCoefEl.value,
+        target: targetEl.value,
+        rows: getRowsData()
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function loadState() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) { setRowsData(null); return; }
+      try {
+        const state = JSON.parse(raw);
+        if (state.maxNote) maxNoteEl.value = String(state.maxNote);
+        if (state.nextCoef) nextCoefEl.value = String(state.nextCoef);
+        if (state.target) targetEl.value = String(state.target);
+        setRowsData(state.rows);
+      } catch {
+        setRowsData(null);
+      }
+    }
 
     function compute() {
-      const rows = [...rowsEl.querySelectorAll(".row")];
+      const maxNote = parseFloat(maxNoteEl.value);
+      const nextCoef = parseInt(nextCoefEl.value, 10);
+      const target = parseFloat(targetEl.value);
+
+      const rows = [...rowsEl.querySelectorAll(".grid")];
       let sum = 0;
       let coefSum = 0;
       let invalid = false;
 
       for (const r of rows) {
         const inputs = r.querySelectorAll("input");
-        const note = parseFloat(inputs[0].value);
-        const coef = parseInt(inputs[1].value, 10);
+        const noteRaw = inputs[0].value.trim();
+        const coefRaw = inputs[1].value.trim();
 
-        if (Number.isNaN(note) && Number.isNaN(coef)) continue; // ligne vide
+        if (noteRaw === "" && coefRaw === "") continue;
 
-        if (Number.isNaN(note) || note < 0 || note > 20 || Number.isNaN(coef) || coef < 1) {
-          invalid = true;
-          break;
+        const note = parseFloat(noteRaw);
+        const coef = parseInt(coefRaw, 10);
+
+        if (Number.isNaN(note) || note < 0 || note > maxNote || Number.isNaN(coef) || coef < 1) {
+          invalid = true; break;
         }
-
         sum += note * coef;
         coefSum += coef;
       }
 
       if (invalid) {
         resultEl.style.display = "block";
-        resultEl.innerHTML = `<p class="danger"><b>Erreur :</b> vérifie les notes (0 à 20) et les coefficients (>=1).</p>`;
+        resultEl.innerHTML = `<p class="danger"><b>Erreur :</b> vérifie les notes (0 à ${maxNote}) et les coefficients (>=1).</p>`;
+        shareEl.style.display = "none";
         return;
       }
 
       if (coefSum === 0) {
         resultEl.style.display = "block";
         resultEl.innerHTML = `<p class="danger"><b>Rien à calculer :</b> ajoute au moins une note.</p>`;
+        shareEl.style.display = "none";
         return;
       }
 
@@ -102,47 +196,83 @@
       const avgR = round2(avg);
 
       let msg = "Niveau correct.";
-      if (avgR < 8) msg = "Moyenne faible : il faut remonter rapidement.";
-      else if (avgR < 10) msg = "Juste en dessous de la moyenne : ça se joue sur le prochain contrôle.";
-      else if (avgR < 12) msg = "Ça passe, mais tu peux gagner 1–2 points facilement.";
-      else if (avgR < 15) msg = "Très bien : continue comme ça.";
+      const ratio = avgR / maxNote; // normaliser si barème != 20
+      if (ratio < 0.40) msg = "Moyenne faible : il faut remonter rapidement.";
+      else if (ratio < 0.50) msg = "Juste en dessous de la moyenne : ça se joue sur le prochain contrôle.";
+      else if (ratio < 0.60) msg = "Ça passe, mais tu peux gagner 1–2 points facilement.";
+      else if (ratio < 0.75) msg = "Très bien : continue comme ça.";
       else msg = "Excellent : gros niveau.";
 
-      // Objectifs (10, 12, 15) : note nécessaire si prochain contrôle coef 2 (modifiable plus tard)
-      const nextCoef = 2;
-      function neededFor(target) {
-        // (sum + x*nextCoef) / (coefSum + nextCoef) = target
-        const x = (target * (coefSum + nextCoef) - sum) / nextCoef;
-        return round2(x);
+      function neededFor(targetScore) {
+        const x = (targetScore * (coefSum + nextCoef) - sum) / nextCoef;
+        return round2(clamp(x, 0, maxNote));
       }
 
-      const need10 = neededFor(10);
-      const need12 = neededFor(12);
-      const need15 = neededFor(15);
+      const needTarget = neededFor(target);
+      const needMid = neededFor(maxNote/2);
 
       resultEl.style.display = "block";
       resultEl.innerHTML = `
-        <p><b>Ta moyenne :</b> ${avgR} / 20</p>
+        <p><b>Ta moyenne :</b> ${avgR} / ${maxNote}</p>
         <p><b>Analyse :</b> ${msg}</p>
-        <p class="small"><b>Projection</b> (si ton prochain contrôle est coef ${nextCoef}) :</p>
+        <p class="small"><b>Prochain contrôle</b> (coef ${nextCoef}) :</p>
         <ul class="small">
-          <li>Pour viser 10/20 : il te faudrait environ <b>${need10}</b> / 20</li>
-          <li>Pour viser 12/20 : il te faudrait environ <b>${need12}</b> / 20</li>
-          <li>Pour viser 15/20 : il te faudrait environ <b>${need15}</b> / 20</li>
+          <li>Pour atteindre <b>${target} / ${maxNote}</b> de moyenne : il te faudrait <b>${needTarget}</b> / ${maxNote}</li>
+          <li>Pour atteindre la moyenne (<b>${round2(maxNote/2)} / ${maxNote}</b>) : il te faudrait <b>${needMid}</b> / ${maxNote}</li>
         </ul>
       `;
+
+      const shareText =
+`Moyenne : ${avgR}/${maxNote}
+Prochain contrôle coef ${nextCoef}
+Objectif ${target}/${maxNote} → note à viser : ${needTarget}/${maxNote}`;
+
+      shareEl.style.display = "block";
+      shareEl.innerHTML = `
+        <p><b>Résumé à copier</b></p>
+        <pre class="mono" style="white-space:pre-wrap;">${shareText}</pre>
+        <button id="copy">Copier</button>
+      `;
+      document.getElementById("copy").onclick = async () => {
+        try { await navigator.clipboard.writeText(shareText); alert("Copié !"); }
+        catch { alert("Copie impossible : sélectionne le texte et copie manuellement."); }
+      };
+
+      saveState();
     }
 
-    document.getElementById("add").onclick = () => makeRow();
+    document.getElementById("add").onclick = () => { makeRow(); saveState(); };
     document.getElementById("calc").onclick = compute;
-    document.getElementById("reset").onclick = () => {
-      rowsEl.innerHTML = "";
-      resultEl.style.display = "none";
-      for (let i = 0; i < 5; i++) makeRow();
+
+    document.getElementById("example").onclick = () => {
+      maxNoteEl.value = "20";
+      nextCoefEl.value = "2";
+      targetEl.value = "12";
+      setRowsData([
+        { note: "14", coef: "2" },
+        { note: "9",  coef: "1" },
+        { note: "12", coef: "3" },
+        { note: "", coef: "1" },
+        { note: "", coef: "1" }
+      ]);
+      saveState();
+      compute();
     };
 
-    // 5 lignes au départ
-    for (let i = 0; i < 5; i++) makeRow();
+    document.getElementById("reset").onclick = () => {
+      localStorage.removeItem(STORAGE_KEY);
+      rowsEl.innerHTML = "";
+      resultEl.style.display = "none";
+      shareEl.style.display = "none";
+      for (let i = 0; i < 5; i++) makeRow();
+      saveState();
+    };
+
+    maxNoteEl.addEventListener("change", saveState);
+    nextCoefEl.addEventListener("change", saveState);
+    targetEl.addEventListener("change", saveState);
+
+    loadState();
   </script>
 </body>
 </html>
