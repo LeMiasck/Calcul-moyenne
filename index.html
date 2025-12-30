@@ -3,24 +3,23 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Calculateur de moyenne (collège)</title>
+  <title>Calculateur de moyennes</title>
   <style>
     :root{
-      --bg1:#071a2b;          /* bleu très foncé */
-      --bg2:#0b2f52;          /* bleu foncé */
-      --card:#ffffff;         /* cartes blanches */
+      --bg1:#071a2b;
+      --bg2:#0b2f52;
+      --card:#ffffff;
       --line:rgba(10,55,96,.18);
       --text:#0b1220;
       --muted:#4b5563;
-      --primary:#0b5ed7;      /* bleu */
-      --primary2:#40a9ff;     /* bleu clair */
+      --primary:#0b5ed7;
+      --primary2:#40a9ff;
       --ok:#0f766e;
       --warn:#b45309;
       --bad:#b00020;
       --shadow: 0 14px 40px rgba(0,0,0,.18);
       --radius: 18px;
     }
-
     *{ box-sizing:border-box; }
     body{
       margin:0;
@@ -33,70 +32,51 @@
       min-height:100vh;
       padding: 18px 12px 40px;
     }
-
-    .wrap{
-      max-width: 920px;
-      margin: 0 auto;
-    }
-
+    .wrap{ max-width: 980px; margin: 0 auto; }
     .hero{
-      display:flex;
-      gap:14px;
-      align-items:center;
-      justify-content:space-between;
-      color:#eaf2ff;
-      padding: 18px 18px 10px;
+      display:flex; gap:14px; align-items:center; justify-content:space-between;
+      color:#eaf2ff; padding: 18px 18px 10px;
     }
-
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      min-width: 220px;
-    }
-
+    .brand{ display:flex; align-items:center; gap:12px; min-width: 220px; }
     .logo{
       width:46px;height:46px;border-radius:14px;
       background: linear-gradient(135deg, var(--primary2), var(--primary));
       box-shadow: 0 10px 25px rgba(64,169,255,.25);
       display:grid;place-items:center;
-      font-weight:800;
-      color:#06223a;
+      font-weight:900; color:#06223a;
     }
-
-    h1{
-      margin:0;
-      font-size: 20px;
-      letter-spacing: .2px;
-    }
-
-    .subtitle{
-      margin:2px 0 0;
-      opacity:.85;
-      font-size: 13px;
-    }
-
+    h1{ margin:0; font-size: 20px; letter-spacing: .2px; }
+    .subtitle{ margin:2px 0 0; opacity:.85; font-size: 13px; }
     .pill{
-      display:flex;
-      gap:8px;
-      align-items:center;
-      padding: 10px 12px;
-      border-radius: 999px;
+      display:flex; gap:8px; align-items:center;
+      padding: 10px 12px; border-radius: 999px;
       background: rgba(255,255,255,.10);
       border: 1px solid rgba(255,255,255,.14);
       backdrop-filter: blur(8px);
+      font-size: 13px; white-space: nowrap;
+    }
+    .pill b{ color:#fff; }
+    .tabs{
+      display:flex; gap:10px; flex-wrap:wrap;
+      padding: 0 18px 12px;
+    }
+    .tab{
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.10);
+      color:#eaf2ff;
+      padding: 10px 12px;
+      border-radius: 999px;
+      cursor:pointer;
+      font-weight:800;
       font-size: 13px;
-      white-space: nowrap;
+      user-select:none;
+    }
+    .tab.active{
+      background: linear-gradient(135deg, rgba(64,169,255,.55), rgba(11,94,215,.35));
+      border-color: rgba(64,169,255,.65);
     }
 
-    .pill b{ color:#ffffff; font-weight:700; }
-
-    .grid2{
-      display:grid;
-      grid-template-columns: 1.15fr .85fr;
-      gap: 14px;
-    }
-
+    .grid2{ display:grid; grid-template-columns: 1.15fr .85fr; gap: 14px; }
     .card{
       background: var(--card);
       border: 1px solid var(--line);
@@ -104,42 +84,16 @@
       box-shadow: var(--shadow);
       overflow:hidden;
     }
-
     .cardHead{
       padding: 14px 16px;
       background: linear-gradient(90deg, rgba(64,169,255,.18), rgba(11,94,215,.10));
       border-bottom: 1px solid var(--line);
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
+      display:flex; justify-content:space-between; align-items:center; gap:10px;
     }
+    .cardHead .title{ font-weight: 900; font-size: 14px; color:#0b2f52; }
+    .cardHead .hint{ font-size: 12px; color: var(--muted); }
 
-    .cardHead .title{
-      font-weight: 800;
-      font-size: 14px;
-      color:#0b2f52;
-    }
-    .cardHead .hint{
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .controls{
-      display:grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      padding: 14px 16px 6px;
-    }
-
-    label{
-      display:block;
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 6px;
-      font-weight: 600;
-    }
-
+    label{ display:block; font-size: 12px; color: var(--muted); margin-bottom: 6px; font-weight: 700; }
     select, input{
       width:100%;
       padding: 11px 12px;
@@ -149,42 +103,33 @@
       font-size: 15px;
       background: #fbfdff;
     }
-
     select:focus, input:focus{
       border-color: rgba(64,169,255,.95);
       box-shadow: 0 0 0 4px rgba(64,169,255,.18);
       background: #ffffff;
     }
 
-    .rows{
-      padding: 8px 16px 2px;
-    }
-
-    .row{
+    .controls{
       display:grid;
-      grid-template-columns: 1fr 1fr 92px;
-      gap:10px;
-      margin-bottom:10px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      padding: 14px 16px 6px;
     }
 
-    .btnRow{
-      padding: 10px 16px 16px;
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-    }
+    .rows{ padding: 8px 16px 2px; }
+    .row{ display:grid; grid-template-columns: 1fr 1fr 92px; gap:10px; margin-bottom:10px; }
+    .btnRow{ padding: 10px 16px 16px; display:flex; gap:10px; flex-wrap:wrap; }
 
     button{
       border:0;
       border-radius: 14px;
       padding: 11px 14px;
       font-size: 15px;
-      font-weight: 700;
+      font-weight: 800;
       cursor:pointer;
       transition: transform .06s ease, filter .12s ease, opacity .12s ease;
       user-select:none;
     }
-
     button:active{ transform: translateY(1px); }
 
     .primary{
@@ -192,84 +137,45 @@
       background: linear-gradient(135deg, var(--primary2), var(--primary));
       box-shadow: 0 10px 25px rgba(11,94,215,.20);
     }
-    .ghost{
-      background: rgba(11,94,215,.08);
-      color: #0b2f52;
-    }
-    .dangerBtn{
-      background: rgba(176,0,32,.08);
-      color: var(--bad);
-      font-weight:800;
-    }
-
-    .mini{
-      font-size: 13px;
-      padding: 10px 12px;
-      border-radius: 12px;
-    }
-
+    .ghost{ background: rgba(11,94,215,.08); color: #0b2f52; }
+    .dangerBtn{ background: rgba(176,0,32,.08); color: var(--bad); font-weight: 900; }
+    .mini{ font-size: 13px; padding: 10px 12px; border-radius: 12px; }
     .del{
       background: rgba(11,94,215,.08);
       color:#0b2f52;
       border: 1px solid rgba(11,94,215,.14);
     }
 
-    .side{
-      padding: 14px 16px 16px;
-    }
-
-    .result{
-      padding: 14px 16px;
-      border-top: 1px solid var(--line);
-      background: linear-gradient(180deg, rgba(64,169,255,.10), transparent);
-    }
+    .side{ padding: 14px 16px 16px; }
+    .result{ padding: 14px 16px; border-top: 1px solid var(--line); background: linear-gradient(180deg, rgba(64,169,255,.10), transparent); }
+    .small{ font-size: 13px; color: var(--muted); line-height: 1.35; margin: 8px 0; }
 
     .kpi{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
+      display:grid; grid-template-columns: 1fr 1fr; gap:10px;
       margin: 10px 0 6px;
     }
-
     .kpiBox{
       border: 1px solid var(--line);
       border-radius: 16px;
       padding: 12px;
       background: #ffffff;
     }
-    .kpiBox .k{
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 4px;
-      font-weight: 700;
-    }
-    .kpiBox .v{
-      font-size: 20px;
-      font-weight: 900;
-      color:#0b2f52;
-    }
+    .kpiBox .k{ font-size: 12px; color: var(--muted); margin-bottom: 4px; font-weight: 800; }
+    .kpiBox .v{ font-size: 20px; font-weight: 1000; color:#0b2f52; }
 
     .badge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding: 8px 10px;
-      border-radius: 999px;
-      font-weight: 800;
-      font-size: 12px;
-      border: 1px solid var(--line);
-      background:#fff;
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 8px 10px; border-radius: 999px;
+      font-weight: 900; font-size: 12px;
+      border: 1px solid var(--line); background:#fff;
+      margin-top: 4px;
     }
     .b-ok{ color: var(--ok); }
     .b-warn{ color: var(--warn); }
     .b-bad{ color: var(--bad); }
 
-    .small{
-      font-size: 13px;
-      color: var(--muted);
-      line-height: 1.35;
-      margin: 8px 0;
-    }
+    .list{ margin: 10px 0 0; padding-left: 18px; color: #1f2937; }
+    .list li{ margin: 6px 0; }
 
     .mono{
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
@@ -282,23 +188,37 @@
       word-break: break-word;
     }
 
-    .list{
-      margin: 10px 0 0;
-      padding-left: 18px;
-      color: #1f2937;
+    .starsLine{
+      display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+      margin-top: 8px;
     }
-    .list li{ margin: 6px 0; }
+    .stars{
+      font-size: 20px;
+      letter-spacing: 2px;
+      background: linear-gradient(135deg, var(--primary2), var(--primary));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-weight: 900;
+    }
+    .starGhost{ color: rgba(11,94,215,.20); font-weight: 900; }
 
-    .footer{
-      margin-top: 14px;
-      color: rgba(255,255,255,.70);
-      text-align:center;
-      font-size: 12px;
+    .footer{ margin-top: 14px; color: rgba(255,255,255,.70); text-align:center; font-size: 12px; }
+
+    .section{ display:none; }
+    .section.active{ display:block; }
+
+    .starControls{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      padding: 14px 16px 6px;
     }
 
     @media (max-width: 860px){
       .grid2{ grid-template-columns: 1fr; }
       .controls{ grid-template-columns: 1fr; }
+      .starControls{ grid-template-columns: 1fr; }
       .kpi{ grid-template-columns: 1fr; }
       .pill{ display:none; }
     }
@@ -311,84 +231,156 @@
       <div class="brand">
         <div class="logo">Σ</div>
         <div>
-          <h1>Calculateur de moyenne</h1>
-          <div class="subtitle">Notes + coefficients • Objectif • Sauvegarde automatique</div>
+          <h1>Calculateur de moyennes</h1>
+          <div class="subtitle">Scolaire + Avis ⭐ (hôtel/site) • Sauvegarde automatique</div>
         </div>
       </div>
-      <div class="pill"><b>Astuce</b> : tu peux changer le barème (20/10/5) et l’objectif.</div>
+      <div class="pill"><b>Astuce</b> : dans “Étoiles”, mets le nombre d’avis pour une moyenne pondérée.</div>
     </div>
 
-    <div class="grid2">
-      <!-- Colonne principale -->
-      <div class="card">
-        <div class="cardHead">
-          <div class="title">Entrer tes notes</div>
-          <div class="hint">Une ligne = une note</div>
+    <div class="tabs">
+      <div class="tab active" id="tabSchool">🎓 Scolaire</div>
+      <div class="tab" id="tabStars">⭐ Étoiles (hôtel/site)</div>
+    </div>
+
+    <!-- SECTION SCOLAIRE -->
+    <div class="section active" id="sectionSchool">
+      <div class="grid2">
+        <div class="card">
+          <div class="cardHead">
+            <div class="title">Entrer tes notes</div>
+            <div class="hint">Une ligne = une note</div>
+          </div>
+
+          <div class="controls">
+            <div>
+              <label for="maxNote">Barème</label>
+              <select id="maxNote">
+                <option value="20" selected>sur 20</option>
+                <option value="10">sur 10</option>
+                <option value="5">sur 5</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="nextCoef">Coef prochain contrôle</label>
+              <select id="nextCoef">
+                <option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option><option>6</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="target">Objectif de moyenne</label>
+              <select id="target">
+                <option value="10">10</option>
+                <option value="12" selected>12</option>
+                <option value="14">14</option>
+                <option value="15">15</option>
+                <option value="16">16</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="rows" id="rowsSchool"></div>
+
+          <div class="btnRow">
+            <button class="primary" id="calcSchool">Calculer</button>
+            <button class="ghost" id="addSchool">+ Ajouter une note</button>
+            <button class="ghost" id="exampleSchool">Exemple</button>
+            <button class="dangerBtn" id="resetSchool">Réinitialiser</button>
+          </div>
         </div>
 
-        <div class="controls">
-          <div>
-            <label for="maxNote">Barème</label>
-            <select id="maxNote">
-              <option value="20" selected>sur 20</option>
-              <option value="10">sur 10</option>
-              <option value="5">sur 5</option>
-            </select>
+        <div class="card">
+          <div class="cardHead">
+            <div class="title">Résultats</div>
+            <div class="hint">Clairs et rapides</div>
           </div>
 
-          <div>
-            <label for="nextCoef">Coef prochain contrôle</label>
-            <select id="nextCoef">
-              <option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option><option>6</option>
-            </select>
+          <div class="side">
+            <div class="small">
+              Clique sur <b>Calculer</b> pour afficher ta moyenne, ton niveau, et la note à viser au prochain contrôle.
+            </div>
+
+            <div id="statusBadgeSchool" class="badge b-warn" style="display:none;">Niveau</div>
+
+            <div class="result" id="resultSchool" style="display:none;"></div>
+
+            <div id="shareboxSchool" style="display:none; margin-top:12px;">
+              <div class="small"><b>Résumé à copier</b></div>
+              <div class="mono" id="sharetextSchool"></div>
+              <button class="mini primary" id="copySchool" style="margin-top:10px;">Copier</button>
+            </div>
+
+            <div class="small" style="margin-top:14px;">
+              Sauvegarde sur <b>ton appareil</b> (rien n’est envoyé).
+            </div>
           </div>
-
-          <div>
-            <label for="target">Objectif de moyenne</label>
-            <select id="target">
-              <option value="10">10</option>
-              <option value="12" selected>12</option>
-              <option value="14">14</option>
-              <option value="15">15</option>
-              <option value="16">16</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="rows" id="rows"></div>
-
-        <div class="btnRow">
-          <button class="primary" id="calc">Calculer</button>
-          <button class="ghost" id="add">+ Ajouter une note</button>
-          <button class="ghost" id="example">Exemple</button>
-          <button class="dangerBtn" id="reset">Réinitialiser</button>
         </div>
       </div>
+    </div>
 
-      <!-- Colonne résultats -->
-      <div class="card">
-        <div class="cardHead">
-          <div class="title">Résultats</div>
-          <div class="hint">Clairs et rapides</div>
+    <!-- SECTION ÉTOILES -->
+    <div class="section" id="sectionStars">
+      <div class="grid2">
+        <div class="card">
+          <div class="cardHead">
+            <div class="title">Entrer des avis ⭐</div>
+            <div class="hint">Note 1–5 + nombre d’avis</div>
+          </div>
+
+          <div class="starControls">
+            <div>
+              <label for="starsMode">Mode</label>
+              <select id="starsMode">
+                <option value="weighted" selected>Moyenne pondérée (avec nb d’avis)</option>
+                <option value="simple">Moyenne simple (ignore nb d’avis)</option>
+              </select>
+            </div>
+            <div>
+              <label for="starsScale">Afficher aussi en</label>
+              <select id="starsScale">
+                <option value="5" selected>/5</option>
+                <option value="10">/10</option>
+                <option value="20">/20</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="rows" id="rowsStars"></div>
+
+          <div class="btnRow">
+            <button class="primary" id="calcStars">Calculer</button>
+            <button class="ghost" id="addStars">+ Ajouter un avis</button>
+            <button class="ghost" id="exampleStars">Exemple</button>
+            <button class="dangerBtn" id="resetStars">Réinitialiser</button>
+          </div>
         </div>
 
-        <div class="side">
-          <div class="small">
-            Clique sur <b>Calculer</b> pour afficher ta moyenne, ton niveau, et la note à viser au prochain contrôle.
+        <div class="card">
+          <div class="cardHead">
+            <div class="title">Résultat ⭐</div>
+            <div class="hint">Lisible tout de suite</div>
           </div>
 
-          <div id="statusBadge" class="badge b-warn" style="display:none;">Niveau</div>
+          <div class="side">
+            <div class="small">
+              Mets une note sur 5 et, si tu veux, le <b>nombre d’avis</b> (ex : 4,6 ⭐ avec 120 avis).
+            </div>
 
-          <div class="result" id="result" style="display:none;"></div>
+            <div id="statusBadgeStars" class="badge b-warn" style="display:none;">Qualité</div>
 
-          <div id="sharebox" style="display:none; margin-top:12px;">
-            <div class="small"><b>Résumé à copier</b> (pratique pour l’envoyer à un ami)</div>
-            <div class="mono" id="sharetext"></div>
-            <button class="mini primary" id="copy" style="margin-top:10px;">Copier</button>
-          </div>
+            <div class="result" id="resultStars" style="display:none;"></div>
 
-          <div class="small" style="margin-top:14px;">
-            Le site sauvegarde les données sur <b>ton appareil</b> (localStorage). Rien n’est envoyé ailleurs.
+            <div id="shareboxStars" style="display:none; margin-top:12px;">
+              <div class="small"><b>Résumé à copier</b></div>
+              <div class="mono" id="sharetextStars"></div>
+              <button class="mini primary" id="copyStars" style="margin-top:10px;">Copier</button>
+            </div>
+
+            <div class="small" style="margin-top:14px;">
+              Sauvegarde sur <b>ton appareil</b> (rien n’est envoyé).
+            </div>
           </div>
         </div>
       </div>
@@ -398,44 +390,56 @@
   </div>
 
   <script>
-    const rowsEl = document.getElementById("rows");
-    const resultEl = document.getElementById("result");
-    const shareBox = document.getElementById("sharebox");
-    const shareTextEl = document.getElementById("sharetext");
-    const badgeEl = document.getElementById("statusBadge");
-
-    const maxNoteEl = document.getElementById("maxNote");
-    const nextCoefEl = document.getElementById("nextCoef");
-    const targetEl = document.getElementById("target");
-
-    const STORAGE_KEY = "calcul-moyenne-v3";
+    const STORAGE_KEY = "calcul-moyenne-v4";
+    const $ = (id) => document.getElementById(id);
 
     function round2(n){ return Math.round(n*100)/100; }
     function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
 
-    function makeRow(note="", coef="1"){
+    // Tabs
+    const tabSchool = $("tabSchool");
+    const tabStars = $("tabStars");
+    const sectionSchool = $("sectionSchool");
+    const sectionStars = $("sectionStars");
+
+    function setTab(which){
+      const isSchool = which === "school";
+      tabSchool.classList.toggle("active", isSchool);
+      tabStars.classList.toggle("active", !isSchool);
+      sectionSchool.classList.toggle("active", isSchool);
+      sectionStars.classList.toggle("active", !isSchool);
+      saveState();
+    }
+    tabSchool.onclick = () => setTab("school");
+    tabStars.onclick = () => setTab("stars");
+
+    // ---------- SCOLAIRE ----------
+    const rowsSchool = $("rowsSchool");
+    const resultSchool = $("resultSchool");
+    const badgeSchool = $("statusBadgeSchool");
+    const shareBoxSchool = $("shareboxSchool");
+    const shareTextSchool = $("sharetextSchool");
+
+    const maxNoteEl = $("maxNote");
+    const nextCoefEl = $("nextCoef");
+    const targetEl = $("target");
+
+    function makeRowSchool(note="", coef="1"){
       const wrap = document.createElement("div");
       wrap.className = "row";
 
       const noteInput = document.createElement("input");
-      noteInput.type = "number";
-      noteInput.inputMode = "decimal";
-      noteInput.placeholder = "Note";
-      noteInput.min = "0";
-      noteInput.step = "0.1";
+      noteInput.type="number"; noteInput.inputMode="decimal";
+      noteInput.placeholder="Note"; noteInput.min="0"; noteInput.step="0.1";
       noteInput.value = note;
 
       const coefInput = document.createElement("input");
-      coefInput.type = "number";
-      coefInput.inputMode = "numeric";
-      coefInput.placeholder = "Coef";
-      coefInput.min = "1";
-      coefInput.step = "1";
+      coefInput.type="number"; coefInput.inputMode="numeric";
+      coefInput.placeholder="Coef"; coefInput.min="1"; coefInput.step="1";
       coefInput.value = coef;
 
       const delBtn = document.createElement("button");
-      delBtn.className = "del";
-      delBtn.textContent = "Suppr.";
+      delBtn.className="del"; delBtn.textContent="Suppr.";
       delBtn.onclick = () => { wrap.remove(); saveState(); };
 
       noteInput.addEventListener("input", saveState);
@@ -444,72 +448,20 @@
       wrap.appendChild(noteInput);
       wrap.appendChild(coefInput);
       wrap.appendChild(delBtn);
-      rowsEl.appendChild(wrap);
+      rowsSchool.appendChild(wrap);
     }
 
-    function getRowsData(){
-      return [...rowsEl.querySelectorAll(".row")].map(r=>{
-        const inputs = r.querySelectorAll("input");
-        return { note: inputs[0].value, coef: inputs[1].value };
-      });
-    }
-
-    function setRowsData(data){
-      rowsEl.innerHTML = "";
-      if(!data || data.length===0){
-        for(let i=0;i<6;i++) makeRow();
-        return;
-      }
-      for(const it of data) makeRow(it.note ?? "", it.coef ?? "1");
-    }
-
-    function saveState(){
-      const state = {
-        maxNote: maxNoteEl.value,
-        nextCoef: nextCoefEl.value,
-        target: targetEl.value,
-        rows: getRowsData()
-      };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    }
-
-    function loadState(){
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if(!raw){ setRowsData(null); return; }
-      try{
-        const st = JSON.parse(raw);
-        if(st.maxNote) maxNoteEl.value = String(st.maxNote);
-        if(st.nextCoef) nextCoefEl.value = String(st.nextCoef);
-        if(st.target) targetEl.value = String(st.target);
-        setRowsData(st.rows);
-      }catch{
-        setRowsData(null);
-      }
-    }
-
-    function showBadge(avg, maxNote){
+    function showBadgeSchool(avg, maxNote){
       const ratio = avg/maxNote;
-      badgeEl.style.display = "inline-flex";
-
-      if(ratio < 0.40){
-        badgeEl.className = "badge b-bad";
-        badgeEl.textContent = "Niveau : à remonter";
-      } else if(ratio < 0.50){
-        badgeEl.className = "badge b-warn";
-        badgeEl.textContent = "Niveau : fragile";
-      } else if(ratio < 0.60){
-        badgeEl.className = "badge b-warn";
-        badgeEl.textContent = "Niveau : correct";
-      } else if(ratio < 0.75){
-        badgeEl.className = "badge b-ok";
-        badgeEl.textContent = "Niveau : très bien";
-      } else {
-        badgeEl.className = "badge b-ok";
-        badgeEl.textContent = "Niveau : excellent";
-      }
+      badgeSchool.style.display = "inline-flex";
+      if(ratio < 0.40){ badgeSchool.className="badge b-bad"; badgeSchool.textContent="Niveau : à remonter"; }
+      else if(ratio < 0.50){ badgeSchool.className="badge b-warn"; badgeSchool.textContent="Niveau : fragile"; }
+      else if(ratio < 0.60){ badgeSchool.className="badge b-warn"; badgeSchool.textContent="Niveau : correct"; }
+      else if(ratio < 0.75){ badgeSchool.className="badge b-ok"; badgeSchool.textContent="Niveau : très bien"; }
+      else { badgeSchool.className="badge b-ok"; badgeSchool.textContent="Niveau : excellent"; }
     }
 
-    function compute(){
+    function computeSchool(){
       const maxNote = parseFloat(maxNoteEl.value);
       const nextCoef = parseInt(nextCoefEl.value, 10);
       const target = parseFloat(targetEl.value);
@@ -517,36 +469,32 @@
       let sum=0, coefSum=0;
       let invalid=false;
 
-      for(const r of [...rowsEl.querySelectorAll(".row")]){
+      for(const r of [...rowsSchool.querySelectorAll(".row")]){
         const inputs = r.querySelectorAll("input");
         const noteRaw = inputs[0].value.trim();
         const coefRaw = inputs[1].value.trim();
-
         if(noteRaw==="" && coefRaw==="") continue;
 
         const note = parseFloat(noteRaw);
         const coef = parseInt(coefRaw, 10);
+        if(Number.isNaN(note) || note<0 || note>maxNote || Number.isNaN(coef) || coef<1){ invalid=true; break; }
 
-        if(Number.isNaN(note) || note<0 || note>maxNote || Number.isNaN(coef) || coef<1){
-          invalid=true; break;
-        }
         sum += note*coef;
         coefSum += coef;
       }
 
       if(invalid){
-        resultEl.style.display="block";
-        resultEl.innerHTML = `<p style="color:#b00020; font-weight:800; margin:0;">Erreur : vérifie les notes (0 à ${maxNote}) et les coefficients (>=1).</p>`;
-        shareBox.style.display="none";
-        badgeEl.style.display="none";
+        resultSchool.style.display="block";
+        resultSchool.innerHTML = `<p style="color:#b00020;font-weight:900;margin:0;">Erreur : notes (0 à ${maxNote}) et coefs (>=1).</p>`;
+        shareBoxSchool.style.display="none";
+        badgeSchool.style.display="none";
         return;
       }
-
       if(coefSum===0){
-        resultEl.style.display="block";
-        resultEl.innerHTML = `<p style="color:#b00020; font-weight:800; margin:0;">Rien à calculer : ajoute au moins une note.</p>`;
-        shareBox.style.display="none";
-        badgeEl.style.display="none";
+        resultSchool.style.display="block";
+        resultSchool.innerHTML = `<p style="color:#b00020;font-weight:900;margin:0;">Rien à calculer : ajoute au moins une note.</p>`;
+        shareBoxSchool.style.display="none";
+        badgeSchool.style.display="none";
         return;
       }
 
@@ -557,91 +505,321 @@
         const x = (targetScore * (coefSum + nextCoef) - sum) / nextCoef;
         return round2(clamp(x, 0, maxNote));
       }
-
       const needTarget = neededFor(target);
       const needMid = neededFor(maxNote/2);
 
-      showBadge(avgR, maxNote);
+      showBadgeSchool(avgR, maxNote);
 
-      resultEl.style.display="block";
-      resultEl.innerHTML = `
+      resultSchool.style.display="block";
+      resultSchool.innerHTML = `
         <div class="kpi">
-          <div class="kpiBox">
-            <div class="k">Ta moyenne</div>
-            <div class="v">${avgR} / ${maxNote}</div>
-          </div>
-          <div class="kpiBox">
-            <div class="k">Coef total</div>
-            <div class="v">${coefSum}</div>
-          </div>
+          <div class="kpiBox"><div class="k">Ta moyenne</div><div class="v">${avgR} / ${maxNote}</div></div>
+          <div class="kpiBox"><div class="k">Coef total</div><div class="v">${coefSum}</div></div>
         </div>
-
         <div class="small" style="margin-top:10px;"><b>Prochain contrôle</b> (coef ${nextCoef}) :</div>
         <ul class="list">
-          <li>Pour atteindre <b>${target} / ${maxNote}</b> : vise environ <b>${needTarget}</b> / ${maxNote}</li>
-          <li>Pour atteindre la moyenne (<b>${round2(maxNote/2)} / ${maxNote}</b>) : vise environ <b>${needMid}</b> / ${maxNote}</li>
+          <li>Pour atteindre <b>${target} / ${maxNote}</b> : vise <b>${needTarget}</b> / ${maxNote}</li>
+          <li>Pour atteindre la moyenne (<b>${round2(maxNote/2)} / ${maxNote}</b>) : vise <b>${needMid}</b> / ${maxNote}</li>
         </ul>
       `;
 
-      const shareText =
+      const txt =
 `Moyenne : ${avgR}/${maxNote}
 Coef total : ${coefSum}
 Prochain contrôle coef ${nextCoef}
 Objectif ${target}/${maxNote} → note à viser : ${needTarget}/${maxNote}`;
 
-      shareTextEl.textContent = shareText;
-      shareBox.style.display="block";
-
+      shareTextSchool.textContent = txt;
+      shareBoxSchool.style.display="block";
       saveState();
     }
 
-    document.getElementById("add").onclick = () => { makeRow(); saveState(); };
-    document.getElementById("calc").onclick = compute;
-
-    document.getElementById("example").onclick = () => {
-      maxNoteEl.value = "20";
-      nextCoefEl.value = "2";
-      targetEl.value = "12";
-      setRowsData([
-        { note:"14", coef:"2" },
-        { note:"9",  coef:"1" },
-        { note:"12", coef:"3" },
-        { note:"", coef:"1" },
-        { note:"", coef:"1" },
-        { note:"", coef:"1" }
-      ]);
+    $("addSchool").onclick = () => { makeRowSchool(); saveState(); };
+    $("calcSchool").onclick = computeSchool;
+    $("exampleSchool").onclick = () => {
+      maxNoteEl.value="20"; nextCoefEl.value="2"; targetEl.value="12";
+      rowsSchool.innerHTML="";
+      makeRowSchool("14","2");
+      makeRowSchool("9","1");
+      makeRowSchool("12","3");
+      makeRowSchool("","1");
+      makeRowSchool("","1");
+      makeRowSchool("","1");
       saveState();
-      compute();
+      computeSchool();
     };
-
-    document.getElementById("reset").onclick = () => {
-      localStorage.removeItem(STORAGE_KEY);
-      rowsEl.innerHTML="";
-      resultEl.style.display="none";
-      shareBox.style.display="none";
-      badgeEl.style.display="none";
-      for(let i=0;i<6;i++) makeRow();
+    $("resetSchool").onclick = () => {
+      rowsSchool.innerHTML="";
+      resultSchool.style.display="none";
+      shareBoxSchool.style.display="none";
+      badgeSchool.style.display="none";
+      for(let i=0;i<6;i++) makeRowSchool();
       saveState();
     };
-
-    document.getElementById("copy").onclick = async () => {
-      const txt = shareTextEl.textContent || "";
-      try{
-        await navigator.clipboard.writeText(txt);
-        alert("Copié !");
-      }catch{
-        alert("Copie impossible : sélectionne le texte et copie manuellement.");
-      }
+    $("copySchool").onclick = async () => {
+      const txt = shareTextSchool.textContent || "";
+      try{ await navigator.clipboard.writeText(txt); alert("Copié !"); }
+      catch{ alert("Copie impossible : sélectionne le texte et copie manuellement."); }
     };
 
     maxNoteEl.addEventListener("change", saveState);
     nextCoefEl.addEventListener("change", saveState);
     targetEl.addEventListener("change", saveState);
 
-    loadState();
-    if(rowsEl.querySelectorAll(".row").length===0){
-      for(let i=0;i<6;i++) makeRow();
+    // ---------- ÉTOILES ----------
+    const rowsStars = $("rowsStars");
+    const resultStars = $("resultStars");
+    const badgeStars = $("statusBadgeStars");
+    const shareBoxStars = $("shareboxStars");
+    const shareTextStars = $("sharetextStars");
+
+    const starsModeEl = $("starsMode");
+    const starsScaleEl = $("starsScale");
+
+    function makeRowStars(rating="", count=""){
+      // rating: note sur 5, count: nb d'avis (poids)
+      const wrap = document.createElement("div");
+      wrap.className = "row";
+
+      const ratingInput = document.createElement("input");
+      ratingInput.type="number"; ratingInput.inputMode="decimal";
+      ratingInput.placeholder="Note (sur 5)"; ratingInput.min="0"; ratingInput.max="5"; ratingInput.step="0.1";
+      ratingInput.value = rating;
+
+      const countInput = document.createElement("input");
+      countInput.type="number"; countInput.inputMode="numeric";
+      countInput.placeholder="Nb d’avis (poids)"; countInput.min="1"; countInput.step="1";
+      countInput.value = count;
+
+      const delBtn = document.createElement("button");
+      delBtn.className="del"; delBtn.textContent="Suppr.";
+      delBtn.onclick = () => { wrap.remove(); saveState(); };
+
+      ratingInput.addEventListener("input", saveState);
+      countInput.addEventListener("input", saveState);
+
+      wrap.appendChild(ratingInput);
+      wrap.appendChild(countInput);
+      wrap.appendChild(delBtn);
+      rowsStars.appendChild(wrap);
     }
+
+    function starsString(avg5){
+      // affichage en étoiles (avec demi-étoile approximée)
+      const full = Math.floor(avg5);
+      const frac = avg5 - full;
+      const half = frac >= 0.25 && frac < 0.75 ? 1 : 0;
+      const extra = frac >= 0.75 ? 1 : 0;
+      const filled = full + extra;
+      const empty = 5 - filled - half;
+
+      let s = "★".repeat(filled);
+      if(half) s += "⯨"; // symbole demi-étoile (peut varier selon téléphone)
+      s += "☆".repeat(empty);
+      return s;
+    }
+
+    function showBadgeStars(avg5){
+      badgeStars.style.display = "inline-flex";
+      if(avg5 < 3.0){ badgeStars.className="badge b-bad"; badgeStars.textContent="Qualité : faible"; }
+      else if(avg5 < 4.0){ badgeStars.className="badge b-warn"; badgeStars.textContent="Qualité : correcte"; }
+      else if(avg5 < 4.5){ badgeStars.className="badge b-ok"; badgeStars.textContent="Qualité : très bien"; }
+      else { badgeStars.className="badge b-ok"; badgeStars.textContent="Qualité : excellent"; }
+    }
+
+    function computeStars(){
+      const mode = starsModeEl.value;          // weighted or simple
+      const scale = parseFloat(starsScaleEl.value); // 5, 10, 20
+
+      let sum=0, weightSum=0;
+      let invalid=false;
+
+      for(const r of [...rowsStars.querySelectorAll(".row")]){
+        const inputs = r.querySelectorAll("input");
+        const ratingRaw = inputs[0].value.trim();
+        const countRaw = inputs[1].value.trim();
+
+        if(ratingRaw==="" && countRaw==="") continue;
+
+        const rating = parseFloat(ratingRaw);
+        const count = parseInt(countRaw, 10);
+
+        if(Number.isNaN(rating) || rating<0 || rating>5){ invalid=true; break; }
+
+        if(mode === "weighted"){
+          if(Number.isNaN(count) || count < 1){ invalid=true; break; }
+          sum += rating * count;
+          weightSum += count;
+        } else {
+          // simple: count ignoré
+          sum += rating;
+          weightSum += 1;
+        }
+      }
+
+      if(invalid){
+        resultStars.style.display="block";
+        resultStars.innerHTML = `<p style="color:#b00020;font-weight:900;margin:0;">Erreur : note entre 0 et 5. En mode pondéré, “nb d’avis” doit être ≥ 1.</p>`;
+        shareBoxStars.style.display="none";
+        badgeStars.style.display="none";
+        return;
+      }
+      if(weightSum===0){
+        resultStars.style.display="block";
+        resultStars.innerHTML = `<p style="color:#b00020;font-weight:900;margin:0;">Rien à calculer : ajoute au moins un avis.</p>`;
+        shareBoxStars.style.display="none";
+        badgeStars.style.display="none";
+        return;
+      }
+
+      const avg5 = sum/weightSum;
+      const avg5R = round2(avg5);
+      const avgScaled = round2(avg5 * (scale/5));
+
+      showBadgeStars(avg5R);
+
+      const starVisual = starsString(avg5R);
+      const modeLabel = (mode === "weighted") ? "pondérée" : "simple";
+      const totalLabel = (mode === "weighted") ? `Total avis : ${weightSum}` : `Nombre de notes : ${weightSum}`;
+
+      resultStars.style.display="block";
+      resultStars.innerHTML = `
+        <div class="kpi">
+          <div class="kpiBox"><div class="k">Moyenne ⭐</div><div class="v">${avg5R} / 5</div></div>
+          <div class="kpiBox"><div class="k">${totalLabel}</div><div class="v">${weightSum}</div></div>
+        </div>
+
+        <div class="starsLine">
+          <div class="stars">${starVisual}</div>
+          <div class="small" style="margin:0;"><b>Mode :</b> ${modeLabel}</div>
+        </div>
+
+        <div class="small" style="margin-top:10px;">
+          Équivalence : <b>${avgScaled}</b> / <b>${scale}</b>
+        </div>
+      `;
+
+      const txt =
+`Moyenne étoiles : ${avg5R}/5
+Équivalence : ${avgScaled}/${scale}
+Mode : ${modeLabel}
+${totalLabel}`;
+
+      shareTextStars.textContent = txt;
+      shareBoxStars.style.display="block";
+      saveState();
+    }
+
+    $("addStars").onclick = () => { makeRowStars(); saveState(); };
+    $("calcStars").onclick = computeStars;
+    $("exampleStars").onclick = () => {
+      starsModeEl.value = "weighted";
+      starsScaleEl.value = "10";
+      rowsStars.innerHTML="";
+      makeRowStars("4.6","120");
+      makeRowStars("4.2","40");
+      makeRowStars("3.9","15");
+      makeRowStars("",""); // ligne vide
+      makeRowStars("","");
+      saveState();
+      computeStars();
+    };
+    $("resetStars").onclick = () => {
+      rowsStars.innerHTML="";
+      resultStars.style.display="none";
+      shareBoxStars.style.display="none";
+      badgeStars.style.display="none";
+      for(let i=0;i<5;i++) makeRowStars();
+      saveState();
+    };
+    $("copyStars").onclick = async () => {
+      const txt = shareTextStars.textContent || "";
+      try{ await navigator.clipboard.writeText(txt); alert("Copié !"); }
+      catch{ alert("Copie impossible : sélectionne le texte et copie manuellement."); }
+    };
+    starsModeEl.addEventListener("change", saveState);
+    starsScaleEl.addEventListener("change", saveState);
+
+    // ---------- SAVE/LOAD GLOBAL ----------
+    function getSchoolRowsData(){
+      return [...rowsSchool.querySelectorAll(".row")].map(r=>{
+        const inputs = r.querySelectorAll("input");
+        return { note: inputs[0].value, coef: inputs[1].value };
+      });
+    }
+    function getStarsRowsData(){
+      return [...rowsStars.querySelectorAll(".row")].map(r=>{
+        const inputs = r.querySelectorAll("input");
+        return { rating: inputs[0].value, count: inputs[1].value };
+      });
+    }
+
+    function saveState(){
+      const state = {
+        activeTab: sectionStars.classList.contains("active") ? "stars" : "school",
+        school: {
+          maxNote: maxNoteEl.value,
+          nextCoef: nextCoefEl.value,
+          target: targetEl.value,
+          rows: getSchoolRowsData()
+        },
+        stars: {
+          mode: starsModeEl.value,
+          scale: starsScaleEl.value,
+          rows: getStarsRowsData()
+        }
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function loadState(){
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw){
+        // défaut
+        for(let i=0;i<6;i++) makeRowSchool();
+        for(let i=0;i<5;i++) makeRowStars();
+        return;
+      }
+      try{
+        const st = JSON.parse(raw);
+
+        if(st.school){
+          if(st.school.maxNote) maxNoteEl.value = String(st.school.maxNote);
+          if(st.school.nextCoef) nextCoefEl.value = String(st.school.nextCoef);
+          if(st.school.target) targetEl.value = String(st.school.target);
+
+          rowsSchool.innerHTML="";
+          const r = st.school.rows || [];
+          if(r.length){ for(const it of r) makeRowSchool(it.note ?? "", it.coef ?? "1"); }
+          else { for(let i=0;i<6;i++) makeRowSchool(); }
+        } else {
+          for(let i=0;i<6;i++) makeRowSchool();
+        }
+
+        if(st.stars){
+          if(st.stars.mode) starsModeEl.value = String(st.stars.mode);
+          if(st.stars.scale) starsScaleEl.value = String(st.stars.scale);
+
+          rowsStars.innerHTML="";
+          const r2 = st.stars.rows || [];
+          if(r2.length){ for(const it of r2) makeRowStars(it.rating ?? "", it.count ?? ""); }
+          else { for(let i=0;i<5;i++) makeRowStars(); }
+        } else {
+          for(let i=0;i<5;i++) makeRowStars();
+        }
+
+        if(st.activeTab === "stars") setTab("stars");
+        else setTab("school");
+      }catch{
+        // fallback
+        rowsSchool.innerHTML=""; rowsStars.innerHTML="";
+        for(let i=0;i<6;i++) makeRowSchool();
+        for(let i=0;i<5;i++) makeRowStars();
+      }
+    }
+
+    // init
+    loadState();
   </script>
 </body>
 </html>
