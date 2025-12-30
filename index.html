@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Calculateur de moyenne (collège)</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 720px; margin: 24px auto; padding: 0 12px; }
+    h1 { font-size: 22px; }
+    .row { display: grid; grid-template-columns: 1fr 1fr 90px; gap: 10px; margin-bottom: 10px; }
+    input { padding: 10px; font-size: 16px; width: 100%; box-sizing: border-box; }
+    button { padding: 10px 12px; font-size: 16px; cursor: pointer; }
+    .box { padding: 12px; border: 1px solid #ddd; border-radius: 10px; margin-top: 14px; }
+    .small { font-size: 13px; color: #444; }
+    .danger { color: #b00020; }
+  </style>
+</head>
+<body>
+  <h1>Calculateur de moyenne scolaire</h1>
+  <p class="small">Entre tes notes et coefficients, puis calcule. (Ex : note 14, coef 2)</p>
+
+  <div id="rows"></div>
+
+  <button id="add">+ Ajouter une note</button>
+  <button id="calc">Calculer</button>
+  <button id="reset">Réinitialiser</button>
+
+  <div class="box" id="result" style="display:none;"></div>
+
+  <script>
+    const rowsEl = document.getElementById("rows");
+    const resultEl = document.getElementById("result");
+
+    function makeRow(note = "", coef = "1") {
+      const wrap = document.createElement("div");
+      wrap.className = "row";
+
+      const noteInput = document.createElement("input");
+      noteInput.type = "number";
+      noteInput.inputMode = "decimal";
+      noteInput.placeholder = "Note (sur 20)";
+      noteInput.min = "0";
+      noteInput.max = "20";
+      noteInput.step = "0.1";
+      noteInput.value = note;
+
+      const coefInput = document.createElement("input");
+      coefInput.type = "number";
+      coefInput.inputMode = "numeric";
+      coefInput.placeholder = "Coef";
+      coefInput.min = "1";
+      coefInput.step = "1";
+      coefInput.value = coef;
+
+      const delBtn = document.createElement("button");
+      delBtn.textContent = "Suppr.";
+      delBtn.onclick = () => wrap.remove();
+
+      wrap.appendChild(noteInput);
+      wrap.appendChild(coefInput);
+      wrap.appendChild(delBtn);
+      rowsEl.appendChild(wrap);
+    }
+
+    function round2(n) { return Math.round(n * 100) / 100; }
+
+    function compute() {
+      const rows = [...rowsEl.querySelectorAll(".row")];
+      let sum = 0;
+      let coefSum = 0;
+      let invalid = false;
+
+      for (const r of rows) {
+        const inputs = r.querySelectorAll("input");
+        const note = parseFloat(inputs[0].value);
+        const coef = parseInt(inputs[1].value, 10);
+
+        if (Number.isNaN(note) && Number.isNaN(coef)) continue; // ligne vide
+
+        if (Number.isNaN(note) || note < 0 || note > 20 || Number.isNaN(coef) || coef < 1) {
+          invalid = true;
+          break;
+        }
+
+        sum += note * coef;
+        coefSum += coef;
+      }
+
+      if (invalid) {
+        resultEl.style.display = "block";
+        resultEl.innerHTML = `<p class="danger"><b>Erreur :</b> vérifie les notes (0 à 20) et les coefficients (>=1).</p>`;
+        return;
+      }
+
+      if (coefSum === 0) {
+        resultEl.style.display = "block";
+        resultEl.innerHTML = `<p class="danger"><b>Rien à calculer :</b> ajoute au moins une note.</p>`;
+        return;
+      }
+
+      const avg = sum / coefSum;
+      const avgR = round2(avg);
+
+      let msg = "Niveau correct.";
+      if (avgR < 8) msg = "Moyenne faible : il faut remonter rapidement.";
+      else if (avgR < 10) msg = "Juste en dessous de la moyenne : ça se joue sur le prochain contrôle.";
+      else if (avgR < 12) msg = "Ça passe, mais tu peux gagner 1–2 points facilement.";
+      else if (avgR < 15) msg = "Très bien : continue comme ça.";
+      else msg = "Excellent : gros niveau.";
+
+      // Objectifs (10, 12, 15) : note nécessaire si prochain contrôle coef 2 (modifiable plus tard)
+      const nextCoef = 2;
+      function neededFor(target) {
+        // (sum + x*nextCoef) / (coefSum + nextCoef) = target
+        const x = (target * (coefSum + nextCoef) - sum) / nextCoef;
+        return round2(x);
+      }
+
+      const need10 = neededFor(10);
+      const need12 = neededFor(12);
+      const need15 = neededFor(15);
+
+      resultEl.style.display = "block";
+      resultEl.innerHTML = `
+        <p><b>Ta moyenne :</b> ${avgR} / 20</p>
+        <p><b>Analyse :</b> ${msg}</p>
+        <p class="small"><b>Projection</b> (si ton prochain contrôle est coef ${nextCoef}) :</p>
+        <ul class="small">
+          <li>Pour viser 10/20 : il te faudrait environ <b>${need10}</b> / 20</li>
+          <li>Pour viser 12/20 : il te faudrait environ <b>${need12}</b> / 20</li>
+          <li>Pour viser 15/20 : il te faudrait environ <b>${need15}</b> / 20</li>
+        </ul>
+      `;
+    }
+
+    document.getElementById("add").onclick = () => makeRow();
+    document.getElementById("calc").onclick = compute;
+    document.getElementById("reset").onclick = () => {
+      rowsEl.innerHTML = "";
+      resultEl.style.display = "none";
+      for (let i = 0; i < 5; i++) makeRow();
+    };
+
+    // 5 lignes au départ
+    for (let i = 0; i < 5; i++) makeRow();
+  </script>
+</body>
+</html>
