@@ -643,3 +643,296 @@
         <div class="small" style="margin-top:10px;"><b>Prochain contrôle</b> (coef ${nextCoef}) :</div>
         <ul class="list">
           <li>Pour atteindre <b>${target} / ${maxNote}</b> : vise <b>${needTarget}</b> / ${maxNote}</li>
+          <li>Pour atteindre la moyenne (<b>${round2(maxNote/2)} / ${maxNote}</b>) : vise <b>${needMid}</b> / ${maxNote}</li>
+        </ul>
+      `;
+
+      const txt =
+`Moyenne : ${avgR}/${maxNote}
+Coef total : ${coefSum}
+Prochain contrôle coef ${nextCoef}
+Objectif ${target}/${maxNote} → note à viser : ${needTarget}/${maxNote}`;
+
+      shareTextSchool.textContent = txt;
+      shareBoxSchool.style.display="block";
+      saveState();
+    }
+
+    $("addSchool").onclick = () => { makeRowSchool(); saveState(); };
+    $("calcSchool").onclick = computeSchool;
+    $("exampleSchool").onclick = () => {
+      maxNoteEl.value="20"; nextCoefEl.value="2"; targetEl.value="12";
+      rowsSchool.innerHTML="";
+      makeRowSchool("14","2");
+      makeRowSchool("9","1");
+      makeRowSchool("12","3");
+      makeRowSchool("","1");
+      makeRowSchool("","1");
+      makeRowSchool("","1");
+      saveState();
+      computeSchool();
+    };
+    $("resetSchool").onclick = () => {
+      rowsSchool.innerHTML="";
+      resultSchool.style.display="none";
+      shareBoxSchool.style.display="none";
+      badgeSchool.style.display="none";
+      for(let i=0;i<6;i++) makeRowSchool();
+      saveState();
+    };
+    $("copySchool").onclick = async () => {
+      const txt = shareTextSchool.textContent || "";
+      try{ await navigator.clipboard.writeText(txt); alert("Copié !"); }
+      catch{ alert("Copie impossible : sélectionne le texte et copie manuellement."); }
+    };
+
+    maxNoteEl.addEventListener("change", saveState);
+    nextCoefEl.addEventListener("change", saveState);
+    targetEl.addEventListener("change", saveState);
+
+    // ---------- ÉTOILES ----------
+    const rowsStars = $("rowsStars");
+    const resultStars = $("resultStars");
+    const badgeStars = $("statusBadgeStars");
+    const shareBoxStars = $("shareboxStars");
+    const shareTextStars = $("sharetextStars");
+
+    const starsModeEl = $("starsMode");
+    const starsScaleEl = $("starsScale");
+
+    function makeRowStars(rating="", count=""){
+      const wrap = document.createElement("div");
+      wrap.className = "row";
+
+      const ratingInput = document.createElement("input");
+      ratingInput.type="number"; ratingInput.inputMode="decimal";
+      ratingInput.placeholder="Note (sur 5)"; ratingInput.min="0"; ratingInput.max="5"; ratingInput.step="0.1";
+      ratingInput.value = rating;
+
+      const countInput = document.createElement("input");
+      countInput.type="number"; countInput.inputMode="numeric";
+      countInput.placeholder="Nb d’avis (poids)"; countInput.min="1"; countInput.step="1";
+      countInput.value = count;
+
+      const delBtn = document.createElement("button");
+      delBtn.className="del"; delBtn.textContent="Suppr.";
+      delBtn.onclick = () => { wrap.remove(); saveState(); };
+
+      ratingInput.addEventListener("input", saveState);
+      countInput.addEventListener("input", saveState);
+
+      wrap.appendChild(ratingInput);
+      wrap.appendChild(countInput);
+      wrap.appendChild(delBtn);
+      rowsStars.appendChild(wrap);
+    }
+
+    function starsString(avg5){
+      const full = Math.floor(avg5);
+      const frac = avg5 - full;
+      const half = frac >= 0.25 && frac < 0.75 ? 1 : 0;
+      const extra = frac >= 0.75 ? 1 : 0;
+      const filled = full + extra;
+      const empty = 5 - filled - half;
+
+      let s = "★".repeat(filled);
+      if(half) s += "⯨"; /* demi-étoile (peut varier selon appareil) */
+      s += "☆".repeat(empty);
+      return s;
+    }
+
+    function showBadgeStars(avg5){
+      badgeStars.style.display = "inline-flex";
+      if(avg5 < 3.0){ badgeStars.className="badge b-bad"; badgeStars.textContent="Qualité : faible"; }
+      else if(avg5 < 4.0){ badgeStars.className="badge b-warn"; badgeStars.textContent="Qualité : correcte"; }
+      else if(avg5 < 4.5){ badgeStars.className="badge b-ok"; badgeStars.textContent="Qualité : très bien"; }
+      else { badgeStars.className="badge b-ok"; badgeStars.textContent="Qualité : excellent"; }
+    }
+
+    function computeStars(){
+      const mode = starsModeEl.value;               // weighted or simple
+      const scale = parseFloat(starsScaleEl.value); // 5,10,20
+
+      let sum=0, weightSum=0;
+      let invalid=false;
+
+      for(const r of [...rowsStars.querySelectorAll(".row")]){
+        const inputs = r.querySelectorAll("input");
+        const ratingRaw = inputs[0].value.trim();
+        const countRaw = inputs[1].value.trim();
+
+        if(ratingRaw==="" && countRaw==="") continue;
+
+        const rating = parseFloat(ratingRaw);
+        const count = parseInt(countRaw, 10);
+
+        if(Number.isNaN(rating) || rating<0 || rating>5){ invalid=true; break; }
+
+        if(mode === "weighted"){
+          if(Number.isNaN(count) || count < 1){ invalid=true; break; }
+          sum += rating * count;
+          weightSum += count;
+        } else {
+          sum += rating;
+          weightSum += 1;
+        }
+      }
+
+      if(invalid){
+        resultStars.style.display="block";
+        resultStars.innerHTML = `<p style="color:#b00020;font-weight:1000;margin:0;">Erreur : note entre 0 et 5. En mode pondéré, “nb d’avis” doit être ≥ 1.</p>`;
+        shareBoxStars.style.display="none";
+        badgeStars.style.display="none";
+        return;
+      }
+      if(weightSum===0){
+        resultStars.style.display="block";
+        resultStars.innerHTML = `<p style="color:#b00020;font-weight:1000;margin:0;">Rien à calculer : ajoute au moins un avis.</p>`;
+        shareBoxStars.style.display="none";
+        badgeStars.style.display="none";
+        return;
+      }
+
+      const avg5 = sum/weightSum;
+      const avg5R = round2(avg5);
+      const avgScaled = round2(avg5 * (scale/5));
+
+      showBadgeStars(avg5R);
+
+      const starVisual = starsString(avg5R);
+      const modeLabel = (mode === "weighted") ? "pondérée" : "simple";
+      const totalLabel = (mode === "weighted") ? `Total avis : ${weightSum}` : `Nombre de notes : ${weightSum}`;
+
+      resultStars.style.display="block";
+      resultStars.innerHTML = `
+        <div class="kpi">
+          <div class="kpiBox"><div class="k">Moyenne ⭐</div><div class="v">${avg5R} / 5</div></div>
+          <div class="kpiBox"><div class="k">${totalLabel}</div><div class="v">${weightSum}</div></div>
+        </div>
+
+        <div class="starsLine">
+          <div class="stars">${starVisual}</div>
+          <div class="small" style="margin:0;"><b>Mode :</b> ${modeLabel}</div>
+        </div>
+
+        <div class="small" style="margin-top:10px;">
+          Équivalence : <b>${avgScaled}</b> / <b>${scale}</b>
+        </div>
+      `;
+
+      const txt =
+`Moyenne étoiles : ${avg5R}/5
+Équivalence : ${avgScaled}/${scale}
+Mode : ${modeLabel}
+${totalLabel}`;
+
+      shareTextStars.textContent = txt;
+      shareBoxStars.style.display="block";
+      saveState();
+    }
+
+    $("addStars").onclick = () => { makeRowStars(); saveState(); };
+    $("calcStars").onclick = computeStars;
+    $("exampleStars").onclick = () => {
+      starsModeEl.value = "weighted";
+      starsScaleEl.value = "10";
+      rowsStars.innerHTML="";
+      makeRowStars("4.6","120");
+      makeRowStars("4.2","40");
+      makeRowStars("3.9","15");
+      makeRowStars("",""); makeRowStars("","");
+      saveState();
+      computeStars();
+    };
+    $("resetStars").onclick = () => {
+      rowsStars.innerHTML="";
+      resultStars.style.display="none";
+      shareBoxStars.style.display="none";
+      badgeStars.style.display="none";
+      for(let i=0;i<5;i++) makeRowStars();
+      saveState();
+    };
+    $("copyStars").onclick = async () => {
+      const txt = shareTextStars.textContent || "";
+      try{ await navigator.clipboard.writeText(txt); alert("Copié !"); }
+      catch{ alert("Copie impossible : sélectionne le texte et copie manuellement."); }
+    };
+    starsModeEl.addEventListener("change", saveState);
+    starsScaleEl.addEventListener("change", saveState);
+
+    // ---------- SAVE/LOAD GLOBAL ----------
+    function getSchoolRowsData(){
+      return [...rowsSchool.querySelectorAll(".row")].map(r=>{
+        const inputs = r.querySelectorAll("input");
+        return { note: inputs[0].value, coef: inputs[1].value };
+      });
+    }
+    function getStarsRowsData(){
+      return [...rowsStars.querySelectorAll(".row")].map(r=>{
+        const inputs = r.querySelectorAll("input");
+        return { rating: inputs[0].value, count: inputs[1].value };
+      });
+    }
+
+    function saveState(){
+      const state = {
+        activeTab: sectionStars.classList.contains("active") ? "stars" : "school",
+        school: {
+          maxNote: maxNoteEl.value,
+          nextCoef: nextCoefEl.value,
+          target: targetEl.value,
+          rows: getSchoolRowsData()
+        },
+        stars: {
+          mode: starsModeEl.value,
+          scale: starsScaleEl.value,
+          rows: getStarsRowsData()
+        }
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function loadState(){
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw){
+        for(let i=0;i<6;i++) makeRowSchool();
+        for(let i=0;i<5;i++) makeRowStars();
+        return;
+      }
+      try{
+        const st = JSON.parse(raw);
+
+        if(st.school){
+          if(st.school.maxNote) maxNoteEl.value = String(st.school.maxNote);
+          if(st.school.nextCoef) nextCoefEl.value = String(st.school.nextCoef);
+          if(st.school.target) targetEl.value = String(st.school.target);
+
+          rowsSchool.innerHTML="";
+          const r = st.school.rows || [];
+          if(r.length){ for(const it of r) makeRowSchool(it.note ?? "", it.coef ?? "1"); }
+          else { for(let i=0;i<6;i++) makeRowSchool(); }
+        } else { for(let i=0;i<6;i++) makeRowSchool(); }
+
+        if(st.stars){
+          if(st.stars.mode) starsModeEl.value = String(st.stars.mode);
+          if(st.stars.scale) starsScaleEl.value = String(st.stars.scale);
+
+          rowsStars.innerHTML="";
+          const r2 = st.stars.rows || [];
+          if(r2.length){ for(const it of r2) makeRowStars(it.rating ?? "", it.count ?? ""); }
+          else { for(let i=0;i<5;i++) makeRowStars(); }
+        } else { for(let i=0;i<5;i++) makeRowStars(); }
+
+        if(st.activeTab === "stars") setTab("stars");
+        else setTab("school");
+      }catch{
+        rowsSchool.innerHTML=""; rowsStars.innerHTML="";
+        for(let i=0;i<6;i++) makeRowSchool();
+        for(let i=0;i<5;i++) makeRowStars();
+      }
+    }
+
+    loadState();
+  </script>
+</body>
+</html>
