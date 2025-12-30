@@ -5,81 +5,417 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Calculateur de moyenne (collège)</title>
   <style>
-    body { font-family: Arial, sans-serif; max-width: 820px; margin: 24px auto; padding: 0 12px; }
-    h1 { font-size: 22px; margin-bottom: 6px; }
-    .small { font-size: 13px; color: #444; }
-    .grid { display: grid; grid-template-columns: 1fr 1fr 90px; gap: 10px; margin-bottom: 10px; }
-    input, select { padding: 10px; font-size: 16px; width: 100%; box-sizing: border-box; }
-    button { padding: 10px 12px; font-size: 16px; cursor: pointer; margin-right: 8px; margin-top: 8px; }
-    .box { padding: 12px; border: 1px solid #ddd; border-radius: 10px; margin-top: 14px; }
-    .danger { color: #b00020; }
-    .rowhead { display:flex; gap:10px; flex-wrap:wrap; align-items:end; margin: 10px 0 12px; }
-    .ctl { min-width: 180px; }
-    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
-    ul { margin-top: 6px; }
+    :root{
+      --bg1:#071a2b;          /* bleu très foncé */
+      --bg2:#0b2f52;          /* bleu foncé */
+      --card:#ffffff;         /* cartes blanches */
+      --line:rgba(10,55,96,.18);
+      --text:#0b1220;
+      --muted:#4b5563;
+      --primary:#0b5ed7;      /* bleu */
+      --primary2:#40a9ff;     /* bleu clair */
+      --ok:#0f766e;
+      --warn:#b45309;
+      --bad:#b00020;
+      --shadow: 0 14px 40px rgba(0,0,0,.18);
+      --radius: 18px;
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 600px at 10% 10%, rgba(64,169,255,.35), transparent 60%),
+        radial-gradient(900px 520px at 90% 20%, rgba(11,94,215,.35), transparent 55%),
+        linear-gradient(160deg, var(--bg1), var(--bg2));
+      min-height:100vh;
+      padding: 18px 12px 40px;
+    }
+
+    .wrap{
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
+    .hero{
+      display:flex;
+      gap:14px;
+      align-items:center;
+      justify-content:space-between;
+      color:#eaf2ff;
+      padding: 18px 18px 10px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width: 220px;
+    }
+
+    .logo{
+      width:46px;height:46px;border-radius:14px;
+      background: linear-gradient(135deg, var(--primary2), var(--primary));
+      box-shadow: 0 10px 25px rgba(64,169,255,.25);
+      display:grid;place-items:center;
+      font-weight:800;
+      color:#06223a;
+    }
+
+    h1{
+      margin:0;
+      font-size: 20px;
+      letter-spacing: .2px;
+    }
+
+    .subtitle{
+      margin:2px 0 0;
+      opacity:.85;
+      font-size: 13px;
+    }
+
+    .pill{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.14);
+      backdrop-filter: blur(8px);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .pill b{ color:#ffffff; font-weight:700; }
+
+    .grid2{
+      display:grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: 14px;
+    }
+
+    .card{
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+
+    .cardHead{
+      padding: 14px 16px;
+      background: linear-gradient(90deg, rgba(64,169,255,.18), rgba(11,94,215,.10));
+      border-bottom: 1px solid var(--line);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+    }
+
+    .cardHead .title{
+      font-weight: 800;
+      font-size: 14px;
+      color:#0b2f52;
+    }
+    .cardHead .hint{
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .controls{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      padding: 14px 16px 6px;
+    }
+
+    label{
+      display:block;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    select, input{
+      width:100%;
+      padding: 11px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(11,94,215,.18);
+      outline: none;
+      font-size: 15px;
+      background: #fbfdff;
+    }
+
+    select:focus, input:focus{
+      border-color: rgba(64,169,255,.95);
+      box-shadow: 0 0 0 4px rgba(64,169,255,.18);
+      background: #ffffff;
+    }
+
+    .rows{
+      padding: 8px 16px 2px;
+    }
+
+    .row{
+      display:grid;
+      grid-template-columns: 1fr 1fr 92px;
+      gap:10px;
+      margin-bottom:10px;
+    }
+
+    .btnRow{
+      padding: 10px 16px 16px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    button{
+      border:0;
+      border-radius: 14px;
+      padding: 11px 14px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor:pointer;
+      transition: transform .06s ease, filter .12s ease, opacity .12s ease;
+      user-select:none;
+    }
+
+    button:active{ transform: translateY(1px); }
+
+    .primary{
+      color:#06223a;
+      background: linear-gradient(135deg, var(--primary2), var(--primary));
+      box-shadow: 0 10px 25px rgba(11,94,215,.20);
+    }
+    .ghost{
+      background: rgba(11,94,215,.08);
+      color: #0b2f52;
+    }
+    .dangerBtn{
+      background: rgba(176,0,32,.08);
+      color: var(--bad);
+      font-weight:800;
+    }
+
+    .mini{
+      font-size: 13px;
+      padding: 10px 12px;
+      border-radius: 12px;
+    }
+
+    .del{
+      background: rgba(11,94,215,.08);
+      color:#0b2f52;
+      border: 1px solid rgba(11,94,215,.14);
+    }
+
+    .side{
+      padding: 14px 16px 16px;
+    }
+
+    .result{
+      padding: 14px 16px;
+      border-top: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(64,169,255,.10), transparent);
+    }
+
+    .kpi{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      margin: 10px 0 6px;
+    }
+
+    .kpiBox{
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px;
+      background: #ffffff;
+    }
+    .kpiBox .k{
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 4px;
+      font-weight: 700;
+    }
+    .kpiBox .v{
+      font-size: 20px;
+      font-weight: 900;
+      color:#0b2f52;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 12px;
+      border: 1px solid var(--line);
+      background:#fff;
+    }
+    .b-ok{ color: var(--ok); }
+    .b-warn{ color: var(--warn); }
+    .b-bad{ color: var(--bad); }
+
+    .small{
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.35;
+      margin: 8px 0;
+    }
+
+    .mono{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      background: #061626;
+      color: #d9ecff;
+      border-radius: 14px;
+      padding: 12px;
+      border: 1px solid rgba(64,169,255,.22);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .list{
+      margin: 10px 0 0;
+      padding-left: 18px;
+      color: #1f2937;
+    }
+    .list li{ margin: 6px 0; }
+
+    .footer{
+      margin-top: 14px;
+      color: rgba(255,255,255,.70);
+      text-align:center;
+      font-size: 12px;
+    }
+
+    @media (max-width: 860px){
+      .grid2{ grid-template-columns: 1fr; }
+      .controls{ grid-template-columns: 1fr; }
+      .kpi{ grid-template-columns: 1fr; }
+      .pill{ display:none; }
+    }
   </style>
 </head>
+
 <body>
-  <h1>Calculateur de moyenne scolaire</h1>
-  <p class="small">Entre tes notes et coefficients, puis calcule. Tes données sont sauvegardées sur ton appareil.</p>
-
-  <div class="rowhead">
-    <div class="ctl">
-      <label class="small" for="maxNote"><b>Barème</b></label>
-      <select id="maxNote">
-        <option value="20" selected>sur 20</option>
-        <option value="10">sur 10</option>
-        <option value="5">sur 5</option>
-      </select>
+  <div class="wrap">
+    <div class="hero">
+      <div class="brand">
+        <div class="logo">Σ</div>
+        <div>
+          <h1>Calculateur de moyenne</h1>
+          <div class="subtitle">Notes + coefficients • Objectif • Sauvegarde automatique</div>
+        </div>
+      </div>
+      <div class="pill"><b>Astuce</b> : tu peux changer le barème (20/10/5) et l’objectif.</div>
     </div>
 
-    <div class="ctl">
-      <label class="small" for="nextCoef"><b>Coef prochain contrôle</b></label>
-      <select id="nextCoef">
-        <option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option><option>6</option>
-      </select>
+    <div class="grid2">
+      <!-- Colonne principale -->
+      <div class="card">
+        <div class="cardHead">
+          <div class="title">Entrer tes notes</div>
+          <div class="hint">Une ligne = une note</div>
+        </div>
+
+        <div class="controls">
+          <div>
+            <label for="maxNote">Barème</label>
+            <select id="maxNote">
+              <option value="20" selected>sur 20</option>
+              <option value="10">sur 10</option>
+              <option value="5">sur 5</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="nextCoef">Coef prochain contrôle</label>
+            <select id="nextCoef">
+              <option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option><option>6</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="target">Objectif de moyenne</label>
+            <select id="target">
+              <option value="10">10</option>
+              <option value="12" selected>12</option>
+              <option value="14">14</option>
+              <option value="15">15</option>
+              <option value="16">16</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="rows" id="rows"></div>
+
+        <div class="btnRow">
+          <button class="primary" id="calc">Calculer</button>
+          <button class="ghost" id="add">+ Ajouter une note</button>
+          <button class="ghost" id="example">Exemple</button>
+          <button class="dangerBtn" id="reset">Réinitialiser</button>
+        </div>
+      </div>
+
+      <!-- Colonne résultats -->
+      <div class="card">
+        <div class="cardHead">
+          <div class="title">Résultats</div>
+          <div class="hint">Clairs et rapides</div>
+        </div>
+
+        <div class="side">
+          <div class="small">
+            Clique sur <b>Calculer</b> pour afficher ta moyenne, ton niveau, et la note à viser au prochain contrôle.
+          </div>
+
+          <div id="statusBadge" class="badge b-warn" style="display:none;">Niveau</div>
+
+          <div class="result" id="result" style="display:none;"></div>
+
+          <div id="sharebox" style="display:none; margin-top:12px;">
+            <div class="small"><b>Résumé à copier</b> (pratique pour l’envoyer à un ami)</div>
+            <div class="mono" id="sharetext"></div>
+            <button class="mini primary" id="copy" style="margin-top:10px;">Copier</button>
+          </div>
+
+          <div class="small" style="margin-top:14px;">
+            Le site sauvegarde les données sur <b>ton appareil</b> (localStorage). Rien n’est envoyé ailleurs.
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="ctl">
-      <label class="small" for="target"><b>Objectif</b></label>
-      <select id="target">
-        <option value="10">10</option>
-        <option value="12" selected>12</option>
-        <option value="14">14</option>
-        <option value="15">15</option>
-        <option value="16">16</option>
-      </select>
-    </div>
+    <div class="footer">LeMiasck • GitHub Pages</div>
   </div>
-
-  <div id="rows"></div>
-
-  <button id="add">+ Ajouter une note</button>
-  <button id="calc">Calculer</button>
-  <button id="example">Exemple</button>
-  <button id="reset">Réinitialiser</button>
-
-  <div class="box" id="result" style="display:none;"></div>
-  <div class="box" id="sharebox" style="display:none;"></div>
 
   <script>
     const rowsEl = document.getElementById("rows");
     const resultEl = document.getElementById("result");
-    const shareEl = document.getElementById("sharebox");
+    const shareBox = document.getElementById("sharebox");
+    const shareTextEl = document.getElementById("sharetext");
+    const badgeEl = document.getElementById("statusBadge");
 
     const maxNoteEl = document.getElementById("maxNote");
     const nextCoefEl = document.getElementById("nextCoef");
     const targetEl = document.getElementById("target");
 
-    const STORAGE_KEY = "calcul-moyenne-v2";
+    const STORAGE_KEY = "calcul-moyenne-v3";
 
-    function round2(n) { return Math.round(n * 100) / 100; }
+    function round2(n){ return Math.round(n*100)/100; }
+    function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
 
-    function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
-
-    function makeRow(note = "", coef = "1") {
+    function makeRow(note="", coef="1"){
       const wrap = document.createElement("div");
-      wrap.className = "grid";
+      wrap.className = "row";
 
       const noteInput = document.createElement("input");
       noteInput.type = "number";
@@ -98,6 +434,7 @@
       coefInput.value = coef;
 
       const delBtn = document.createElement("button");
+      delBtn.className = "del";
       delBtn.textContent = "Suppr.";
       delBtn.onclick = () => { wrap.remove(); saveState(); };
 
@@ -110,24 +447,23 @@
       rowsEl.appendChild(wrap);
     }
 
-    function getRowsData() {
-      const rows = [...rowsEl.querySelectorAll(".grid")];
-      return rows.map(r => {
+    function getRowsData(){
+      return [...rowsEl.querySelectorAll(".row")].map(r=>{
         const inputs = r.querySelectorAll("input");
         return { note: inputs[0].value, coef: inputs[1].value };
       });
     }
 
-    function setRowsData(data) {
+    function setRowsData(data){
       rowsEl.innerHTML = "";
-      if (!data || data.length === 0) {
-        for (let i = 0; i < 5; i++) makeRow();
+      if(!data || data.length===0){
+        for(let i=0;i<6;i++) makeRow();
         return;
       }
-      for (const it of data) makeRow(it.note ?? "", it.coef ?? "1");
+      for(const it of data) makeRow(it.note ?? "", it.coef ?? "1");
     }
 
-    function saveState() {
+    function saveState(){
       const state = {
         maxNote: maxNoteEl.value,
         nextCoef: nextCoefEl.value,
@@ -137,73 +473,87 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     }
 
-    function loadState() {
+    function loadState(){
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) { setRowsData(null); return; }
-      try {
-        const state = JSON.parse(raw);
-        if (state.maxNote) maxNoteEl.value = String(state.maxNote);
-        if (state.nextCoef) nextCoefEl.value = String(state.nextCoef);
-        if (state.target) targetEl.value = String(state.target);
-        setRowsData(state.rows);
-      } catch {
+      if(!raw){ setRowsData(null); return; }
+      try{
+        const st = JSON.parse(raw);
+        if(st.maxNote) maxNoteEl.value = String(st.maxNote);
+        if(st.nextCoef) nextCoefEl.value = String(st.nextCoef);
+        if(st.target) targetEl.value = String(st.target);
+        setRowsData(st.rows);
+      }catch{
         setRowsData(null);
       }
     }
 
-    function compute() {
+    function showBadge(avg, maxNote){
+      const ratio = avg/maxNote;
+      badgeEl.style.display = "inline-flex";
+
+      if(ratio < 0.40){
+        badgeEl.className = "badge b-bad";
+        badgeEl.textContent = "Niveau : à remonter";
+      } else if(ratio < 0.50){
+        badgeEl.className = "badge b-warn";
+        badgeEl.textContent = "Niveau : fragile";
+      } else if(ratio < 0.60){
+        badgeEl.className = "badge b-warn";
+        badgeEl.textContent = "Niveau : correct";
+      } else if(ratio < 0.75){
+        badgeEl.className = "badge b-ok";
+        badgeEl.textContent = "Niveau : très bien";
+      } else {
+        badgeEl.className = "badge b-ok";
+        badgeEl.textContent = "Niveau : excellent";
+      }
+    }
+
+    function compute(){
       const maxNote = parseFloat(maxNoteEl.value);
       const nextCoef = parseInt(nextCoefEl.value, 10);
       const target = parseFloat(targetEl.value);
 
-      const rows = [...rowsEl.querySelectorAll(".grid")];
-      let sum = 0;
-      let coefSum = 0;
-      let invalid = false;
+      let sum=0, coefSum=0;
+      let invalid=false;
 
-      for (const r of rows) {
+      for(const r of [...rowsEl.querySelectorAll(".row")]){
         const inputs = r.querySelectorAll("input");
         const noteRaw = inputs[0].value.trim();
         const coefRaw = inputs[1].value.trim();
 
-        if (noteRaw === "" && coefRaw === "") continue;
+        if(noteRaw==="" && coefRaw==="") continue;
 
         const note = parseFloat(noteRaw);
         const coef = parseInt(coefRaw, 10);
 
-        if (Number.isNaN(note) || note < 0 || note > maxNote || Number.isNaN(coef) || coef < 1) {
-          invalid = true; break;
+        if(Number.isNaN(note) || note<0 || note>maxNote || Number.isNaN(coef) || coef<1){
+          invalid=true; break;
         }
-        sum += note * coef;
+        sum += note*coef;
         coefSum += coef;
       }
 
-      if (invalid) {
-        resultEl.style.display = "block";
-        resultEl.innerHTML = `<p class="danger"><b>Erreur :</b> vérifie les notes (0 à ${maxNote}) et les coefficients (>=1).</p>`;
-        shareEl.style.display = "none";
+      if(invalid){
+        resultEl.style.display="block";
+        resultEl.innerHTML = `<p style="color:#b00020; font-weight:800; margin:0;">Erreur : vérifie les notes (0 à ${maxNote}) et les coefficients (>=1).</p>`;
+        shareBox.style.display="none";
+        badgeEl.style.display="none";
         return;
       }
 
-      if (coefSum === 0) {
-        resultEl.style.display = "block";
-        resultEl.innerHTML = `<p class="danger"><b>Rien à calculer :</b> ajoute au moins une note.</p>`;
-        shareEl.style.display = "none";
+      if(coefSum===0){
+        resultEl.style.display="block";
+        resultEl.innerHTML = `<p style="color:#b00020; font-weight:800; margin:0;">Rien à calculer : ajoute au moins une note.</p>`;
+        shareBox.style.display="none";
+        badgeEl.style.display="none";
         return;
       }
 
-      const avg = sum / coefSum;
+      const avg = sum/coefSum;
       const avgR = round2(avg);
 
-      let msg = "Niveau correct.";
-      const ratio = avgR / maxNote; // normaliser si barème != 20
-      if (ratio < 0.40) msg = "Moyenne faible : il faut remonter rapidement.";
-      else if (ratio < 0.50) msg = "Juste en dessous de la moyenne : ça se joue sur le prochain contrôle.";
-      else if (ratio < 0.60) msg = "Ça passe, mais tu peux gagner 1–2 points facilement.";
-      else if (ratio < 0.75) msg = "Très bien : continue comme ça.";
-      else msg = "Excellent : gros niveau.";
-
-      function neededFor(targetScore) {
+      function neededFor(targetScore){
         const x = (targetScore * (coefSum + nextCoef) - sum) / nextCoef;
         return round2(clamp(x, 0, maxNote));
       }
@@ -211,32 +561,36 @@
       const needTarget = neededFor(target);
       const needMid = neededFor(maxNote/2);
 
-      resultEl.style.display = "block";
+      showBadge(avgR, maxNote);
+
+      resultEl.style.display="block";
       resultEl.innerHTML = `
-        <p><b>Ta moyenne :</b> ${avgR} / ${maxNote}</p>
-        <p><b>Analyse :</b> ${msg}</p>
-        <p class="small"><b>Prochain contrôle</b> (coef ${nextCoef}) :</p>
-        <ul class="small">
-          <li>Pour atteindre <b>${target} / ${maxNote}</b> de moyenne : il te faudrait <b>${needTarget}</b> / ${maxNote}</li>
-          <li>Pour atteindre la moyenne (<b>${round2(maxNote/2)} / ${maxNote}</b>) : il te faudrait <b>${needMid}</b> / ${maxNote}</li>
+        <div class="kpi">
+          <div class="kpiBox">
+            <div class="k">Ta moyenne</div>
+            <div class="v">${avgR} / ${maxNote}</div>
+          </div>
+          <div class="kpiBox">
+            <div class="k">Coef total</div>
+            <div class="v">${coefSum}</div>
+          </div>
+        </div>
+
+        <div class="small" style="margin-top:10px;"><b>Prochain contrôle</b> (coef ${nextCoef}) :</div>
+        <ul class="list">
+          <li>Pour atteindre <b>${target} / ${maxNote}</b> : vise environ <b>${needTarget}</b> / ${maxNote}</li>
+          <li>Pour atteindre la moyenne (<b>${round2(maxNote/2)} / ${maxNote}</b>) : vise environ <b>${needMid}</b> / ${maxNote}</li>
         </ul>
       `;
 
       const shareText =
 `Moyenne : ${avgR}/${maxNote}
+Coef total : ${coefSum}
 Prochain contrôle coef ${nextCoef}
 Objectif ${target}/${maxNote} → note à viser : ${needTarget}/${maxNote}`;
 
-      shareEl.style.display = "block";
-      shareEl.innerHTML = `
-        <p><b>Résumé à copier</b></p>
-        <pre class="mono" style="white-space:pre-wrap;">${shareText}</pre>
-        <button id="copy">Copier</button>
-      `;
-      document.getElementById("copy").onclick = async () => {
-        try { await navigator.clipboard.writeText(shareText); alert("Copié !"); }
-        catch { alert("Copie impossible : sélectionne le texte et copie manuellement."); }
-      };
+      shareTextEl.textContent = shareText;
+      shareBox.style.display="block";
 
       saveState();
     }
@@ -249,11 +603,12 @@ Objectif ${target}/${maxNote} → note à viser : ${needTarget}/${maxNote}`;
       nextCoefEl.value = "2";
       targetEl.value = "12";
       setRowsData([
-        { note: "14", coef: "2" },
-        { note: "9",  coef: "1" },
-        { note: "12", coef: "3" },
-        { note: "", coef: "1" },
-        { note: "", coef: "1" }
+        { note:"14", coef:"2" },
+        { note:"9",  coef:"1" },
+        { note:"12", coef:"3" },
+        { note:"", coef:"1" },
+        { note:"", coef:"1" },
+        { note:"", coef:"1" }
       ]);
       saveState();
       compute();
@@ -261,11 +616,22 @@ Objectif ${target}/${maxNote} → note à viser : ${needTarget}/${maxNote}`;
 
     document.getElementById("reset").onclick = () => {
       localStorage.removeItem(STORAGE_KEY);
-      rowsEl.innerHTML = "";
-      resultEl.style.display = "none";
-      shareEl.style.display = "none";
-      for (let i = 0; i < 5; i++) makeRow();
+      rowsEl.innerHTML="";
+      resultEl.style.display="none";
+      shareBox.style.display="none";
+      badgeEl.style.display="none";
+      for(let i=0;i<6;i++) makeRow();
       saveState();
+    };
+
+    document.getElementById("copy").onclick = async () => {
+      const txt = shareTextEl.textContent || "";
+      try{
+        await navigator.clipboard.writeText(txt);
+        alert("Copié !");
+      }catch{
+        alert("Copie impossible : sélectionne le texte et copie manuellement.");
+      }
     };
 
     maxNoteEl.addEventListener("change", saveState);
@@ -273,6 +639,9 @@ Objectif ${target}/${maxNote} → note à viser : ${needTarget}/${maxNote}`;
     targetEl.addEventListener("change", saveState);
 
     loadState();
+    if(rowsEl.querySelectorAll(".row").length===0){
+      for(let i=0;i<6;i++) makeRow();
+    }
   </script>
 </body>
 </html>
